@@ -1,1 +1,1 @@
-worker: python gymai_bot.py
+web: python server.py

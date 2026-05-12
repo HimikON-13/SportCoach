@@ -1,0 +1,612 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>GymAI</title>
+<script src="https://telegram.org/js/telegram-web-app.js"></script>
+<style>
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
+:root {
+  --bg: #0f0f0f;
+  --bg2: #1a1a1a;
+  --bg3: #222;
+  --bg4: #2a2a2a;
+  --green: #7ed321;
+  --green2: #6bb91c;
+  --text: #ffffff;
+  --text2: #999;
+  --text3: #555;
+  --border: rgba(255,255,255,0.08);
+}
+html, body { height: 100%; overflow: hidden; background: var(--bg); }
+body { font-family: -apple-system, 'SF Pro Display', sans-serif; color: var(--text); font-size: 15px; }
+
+/* SPLASH */
+#splash {
+  position: fixed; inset: 0; background: var(--bg);
+  display: flex; flex-direction: column; align-items: center; justify-content: center; z-index: 100;
+  transition: opacity 0.4s;
+}
+.splash-logo { font-size: 52px; font-weight: 900; letter-spacing: -2px; color: var(--text); margin-bottom: 6px; }
+.splash-logo span { color: var(--green); }
+.splash-sub { color: var(--text2); font-size: 14px; margin-bottom: 48px; }
+.splash-bar { width: 180px; height: 3px; background: var(--bg3); border-radius: 2px; overflow: hidden; }
+.splash-fill { height: 100%; background: var(--green); border-radius: 2px; animation: load 1.5s ease forwards; }
+@keyframes load { from { width: 0; } to { width: 100%; } }
+
+/* APP */
+#app { display: none; flex-direction: column; height: 100vh; }
+#app.show { display: flex; }
+
+/* HEADER */
+.header { padding: 16px 20px 12px; display: flex; justify-content: space-between; align-items: center; flex-shrink: 0; }
+.header-title { font-size: 24px; font-weight: 800; letter-spacing: -0.5px; }
+.header-title span { color: var(--green); }
+.avatar { width: 36px; height: 36px; border-radius: 50%; background: var(--bg3); border: 2px solid var(--green); display: flex; align-items: center; justify-content: center; font-size: 16px; cursor: pointer; }
+
+/* PAGES */
+.pages { flex: 1; overflow: hidden; position: relative; }
+.page { position: absolute; inset: 0; overflow-y: auto; padding: 0 16px 90px; display: none; }
+.page.active { display: block; }
+.page::-webkit-scrollbar { display: none; }
+
+/* BOTTOM NAV */
+.nav { position: fixed; bottom: 0; left: 0; right: 0; background: var(--bg2); border-top: 1px solid var(--border); display: flex; padding: 8px 0 calc(8px + env(safe-area-inset-bottom)); z-index: 50; }
+.nav-btn { flex: 1; display: flex; flex-direction: column; align-items: center; gap: 3px; cursor: pointer; padding: 4px 0; transition: all 0.15s; }
+.nav-btn .ic { font-size: 22px; }
+.nav-btn .lb { font-size: 10px; color: var(--text3); font-weight: 500; }
+.nav-btn.on .lb { color: var(--green); }
+.nav-btn.on .ic { filter: drop-shadow(0 0 6px rgba(126,211,33,0.6)); }
+
+/* CARDS */
+.card { background: var(--bg2); border-radius: 16px; padding: 16px; margin-bottom: 12px; border: 1px solid var(--border); }
+.card-label { font-size: 11px; text-transform: uppercase; letter-spacing: 1.5px; color: var(--text3); margin-bottom: 10px; font-weight: 600; }
+
+/* STATS ROW */
+.stats { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 12px; }
+.stat-card { background: var(--bg2); border-radius: 14px; padding: 14px; border: 1px solid var(--border); }
+.stat-val { font-size: 28px; font-weight: 800; color: var(--green); line-height: 1; }
+.stat-lbl { font-size: 11px; color: var(--text3); margin-top: 4px; text-transform: uppercase; letter-spacing: 1px; }
+
+/* BUTTONS */
+.btn { width: 100%; padding: 14px; border-radius: 12px; border: none; font-size: 15px; font-weight: 700; font-family: inherit; cursor: pointer; transition: all 0.15s; }
+.btn-green { background: var(--green); color: #000; }
+.btn-green:active { background: var(--green2); transform: scale(0.98); }
+.btn-dark { background: var(--bg3); color: var(--text); margin-top: 8px; }
+.btn-dark:active { background: var(--bg4); }
+.btn:disabled { opacity: 0.4; }
+
+/* INPUT */
+.inp { width: 100%; background: var(--bg3); border: 1px solid var(--border); color: var(--text); padding: 12px 14px; border-radius: 12px; font-size: 15px; font-family: inherit; outline: none; }
+.inp:focus { border-color: var(--green); }
+select.inp { cursor: pointer; }
+textarea.inp { resize: none; }
+.field { margin-bottom: 12px; }
+.field-label { font-size: 12px; color: var(--text2); margin-bottom: 6px; display: block; font-weight: 500; }
+
+/* CHIPS */
+.chips { display: flex; flex-wrap: wrap; gap: 7px; margin-top: 8px; }
+.chip { padding: 6px 12px; border-radius: 20px; font-size: 13px; background: var(--bg3); border: 1px solid var(--border); color: var(--text2); cursor: pointer; transition: all 0.15s; user-select: none; }
+.chip.on { background: rgba(126,211,33,0.15); border-color: var(--green); color: var(--green); font-weight: 600; }
+
+/* EQUIPMENT CARDS */
+.eq-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+.eq-card { background: var(--bg2); border-radius: 14px; overflow: hidden; border: 1px solid var(--border); position: relative; }
+.eq-img { width: 100%; height: 90px; object-fit: cover; background: var(--bg3); display: flex; align-items: center; justify-content: center; font-size: 32px; }
+.eq-body { padding: 10px; }
+.eq-name { font-size: 13px; font-weight: 600; margin-bottom: 5px; }
+.eq-muscles { display: flex; flex-wrap: wrap; gap: 3px; }
+.eq-m { font-size: 10px; background: rgba(126,211,33,0.12); color: var(--green); border-radius: 4px; padding: 2px 6px; font-weight: 500; }
+.eq-del { position: absolute; top: 6px; right: 6px; background: rgba(0,0,0,0.5); border: none; color: #fff; border-radius: 50%; width: 22px; height: 22px; font-size: 13px; cursor: pointer; display: flex; align-items: center; justify-content: center; }
+
+/* ADD ZONE */
+.add-zone { border: 2px dashed var(--border); border-radius: 14px; padding: 28px; text-align: center; cursor: pointer; transition: all 0.2s; margin-bottom: 12px; }
+.add-zone:active { border-color: var(--green); background: rgba(126,211,33,0.05); }
+.add-zone-icon { font-size: 36px; margin-bottom: 8px; }
+.add-zone-text { font-size: 15px; font-weight: 600; margin-bottom: 4px; }
+.add-zone-sub { font-size: 13px; color: var(--text3); }
+
+/* WORKOUT EXERCISES */
+.ex-card { background: var(--bg2); border-radius: 14px; padding: 14px; margin-bottom: 10px; border: 1px solid var(--border); }
+.ex-name { font-size: 15px; font-weight: 700; margin-bottom: 6px; }
+.ex-eq { font-size: 12px; color: var(--text3); margin-bottom: 8px; }
+.ex-stats { display: flex; gap: 10px; }
+.ex-stat { background: var(--bg3); border-radius: 8px; padding: 6px 10px; font-size: 12px; flex: 1; text-align: center; }
+.ex-stat-val { font-weight: 700; color: var(--green); font-size: 14px; }
+.ex-tip { margin-top: 10px; padding-top: 10px; border-top: 1px solid var(--border); font-size: 12px; color: var(--green); }
+
+/* HISTORY */
+.wo-item { background: var(--bg2); border-radius: 14px; padding: 14px; margin-bottom: 10px; border: 1px solid var(--border); }
+.wo-name { font-size: 15px; font-weight: 700; margin-bottom: 4px; }
+.wo-date { font-size: 12px; color: var(--text3); margin-bottom: 10px; }
+.wo-exercises { display: flex; flex-wrap: wrap; gap: 5px; }
+.wo-ex { background: var(--bg3); border-radius: 6px; padding: 3px 8px; font-size: 12px; color: var(--text2); }
+
+/* CHAT */
+.chat-wrap { display: flex; flex-direction: column; height: calc(100vh - 170px); }
+.messages { flex: 1; overflow-y: auto; padding-bottom: 8px; }
+.messages::-webkit-scrollbar { display: none; }
+.msg { display: flex; gap: 8px; margin-bottom: 12px; }
+.msg.u { flex-direction: row-reverse; }
+.msg-av { width: 28px; height: 28px; border-radius: 50%; flex-shrink: 0; display: flex; align-items: center; justify-content: center; font-size: 12px; font-weight: 700; }
+.msg-av.ai { background: var(--green); color: #000; }
+.msg-av.u { background: var(--bg3); color: var(--text2); }
+.msg-bbl { max-width: 80%; padding: 10px 13px; border-radius: 14px; font-size: 14px; line-height: 1.55; white-space: pre-wrap; }
+.msg-bbl.ai { background: var(--bg2); border: 1px solid var(--border); }
+.msg-bbl.u { background: var(--green); color: #000; font-weight: 500; }
+.chat-input-row { display: flex; gap: 8px; margin-top: 10px; }
+.chat-inp { flex: 1; background: var(--bg2); border: 1px solid var(--border); color: var(--text); padding: 11px 13px; border-radius: 22px; font-size: 14px; font-family: inherit; outline: none; resize: none; max-height: 100px; }
+.chat-inp:focus { border-color: var(--green); }
+.chat-send { width: 42px; height: 42px; background: var(--green); border: none; border-radius: 50%; font-size: 18px; cursor: pointer; display: flex; align-items: center; justify-content: center; flex-shrink: 0; align-self: flex-end; }
+.quick-btns { display: flex; gap: 6px; overflow-x: auto; margin-bottom: 10px; padding-bottom: 4px; }
+.quick-btns::-webkit-scrollbar { display: none; }
+.q-btn { background: var(--bg2); border: 1px solid var(--border); color: var(--text2); border-radius: 20px; padding: 6px 12px; font-size: 12px; white-space: nowrap; cursor: pointer; font-family: inherit; flex-shrink: 0; }
+
+/* MODAL */
+.modal-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.7); z-index: 200; display: flex; align-items: flex-end; }
+.modal { background: var(--bg2); border-radius: 20px 20px 0 0; padding: 20px 20px calc(20px + env(safe-area-inset-bottom)); width: 100%; max-height: 85vh; overflow-y: auto; }
+.modal::-webkit-scrollbar { display: none; }
+.modal-handle { width: 36px; height: 4px; background: var(--bg4); border-radius: 2px; margin: 0 auto 16px; }
+.modal-title { font-size: 18px; font-weight: 800; margin-bottom: 16px; }
+
+/* PROFILE */
+.profile-header { display: flex; flex-direction: column; align-items: center; padding: 20px 0 16px; }
+.profile-av { width: 72px; height: 72px; border-radius: 50%; background: var(--bg3); border: 3px solid var(--green); display: flex; align-items: center; justify-content: center; font-size: 32px; margin-bottom: 10px; }
+.profile-name { font-size: 20px; font-weight: 800; }
+.profile-goal { font-size: 13px; color: var(--green); margin-top: 3px; }
+
+@keyframes pulse { 0%,100%{opacity:.3}50%{opacity:1} }
+.dots span { display: inline-block; width: 6px; height: 6px; background: var(--text2); border-radius: 50%; margin: 0 2px; animation: pulse 1.2s infinite; }
+.dots span:nth-child(2){animation-delay:.25s}
+.dots span:nth-child(3){animation-delay:.5s}
+
+.section-title { font-size: 18px; font-weight: 800; margin: 16px 0 12px; }
+.greeting { font-size: 22px; font-weight: 800; margin-bottom: 4px; }
+.greeting-sub { font-size: 14px; color: var(--text2); margin-bottom: 20px; }
+.last-wo { display: flex; justify-content: space-between; align-items: center; }
+.last-wo-badge { background: rgba(126,211,33,0.15); color: var(--green); border-radius: 6px; padding: 3px 10px; font-size: 12px; font-weight: 600; }
+</style>
+</head>
+<body>
+
+<!-- SPLASH -->
+<div id="splash">
+  <div class="splash-logo">GYM<span>AI</span></div>
+  <div class="splash-sub">твой персональный тренер</div>
+  <div class="splash-bar"><div class="splash-fill"></div></div>
+</div>
+
+<!-- APP -->
+<div id="app">
+  <div class="header">
+    <div class="header-title">GYM<span>AI</span></div>
+    <div class="avatar" onclick="goPage('profile')">👤</div>
+  </div>
+
+  <div class="pages">
+    <!-- ГЛАВНАЯ -->
+    <div class="page active" id="p-home">
+      <div class="greeting" id="greeting">Привет! 👋</div>
+      <div class="greeting-sub">Готов к тренировке?</div>
+      <div class="stats">
+        <div class="stat-card"><div class="stat-val" id="s-wo">0</div><div class="stat-lbl">Тренировок</div></div>
+        <div class="stat-card"><div class="stat-val" id="s-eq">0</div><div class="stat-lbl">Тренажёров</div></div>
+      </div>
+      <div class="card" id="last-wo-card" style="display:none">
+        <div class="card-label">Последняя тренировка</div>
+        <div class="last-wo">
+          <div>
+            <div style="font-weight:700;font-size:15px" id="last-wo-name"></div>
+            <div style="font-size:12px;color:var(--text3);margin-top:3px" id="last-wo-date"></div>
+          </div>
+          <span class="last-wo-badge">✓</span>
+        </div>
+      </div>
+      <button class="btn btn-green" onclick="goPage('workout')">💪 Начать тренировку</button>
+      <button class="btn btn-dark" onclick="goPage('gym')">🏋️ Мой зал</button>
+    </div>
+
+    <!-- МОЙ ЗАЛ -->
+    <div class="page" id="p-gym">
+      <div class="section-title">Мой зал</div>
+      <div class="add-zone" onclick="showAddModal()">
+        <div class="add-zone-icon">📷</div>
+        <div class="add-zone-text">Добавить тренажёр</div>
+        <div class="add-zone-sub">вручную или по названию</div>
+      </div>
+      <div class="eq-grid" id="eq-list"></div>
+    </div>
+
+    <!-- ТРЕНИРОВКА -->
+    <div class="page" id="p-workout">
+      <div class="section-title">Тренировка</div>
+      <div id="workout-form">
+        <div class="field">
+          <label class="field-label">Тип тренировки</label>
+          <select class="inp" id="wtype">
+            <option>Силовая</option>
+            <option>Гипертрофия</option>
+            <option>Полное тело</option>
+            <option>Верх тела</option>
+            <option>Низ тела</option>
+          </select>
+        </div>
+        <div class="field">
+          <label class="field-label">Акцент на мышцы</label>
+          <div class="chips" id="muscle-chips"></div>
+        </div>
+        <div style="font-size:12px;color:var(--text3);margin-bottom:14px;padding:10px 12px;background:var(--bg3);border-radius:10px" id="eq-hint">🏋️ Загрузка...</div>
+        <button class="btn btn-green" id="gen-btn" onclick="generateWorkout()">✨ Сгенерировать</button>
+      </div>
+      <div id="workout-result" style="display:none">
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:14px">
+          <div>
+            <div style="font-size:18px;font-weight:800" id="plan-name"></div>
+            <div style="font-size:12px;color:var(--text3)" id="plan-dur"></div>
+          </div>
+          <button class="btn btn-green" style="width:auto;padding:8px 16px;font-size:13px" onclick="saveWorkout()">💾 Сохранить</button>
+        </div>
+        <div id="plan-exercises"></div>
+        <div id="plan-notes" style="font-size:13px;color:var(--text2);padding:12px;background:var(--bg2);border-radius:12px;border:1px solid var(--border)"></div>
+        <button class="btn btn-dark" style="margin-top:10px" onclick="resetWorkout()">← Новая тренировка</button>
+      </div>
+    </div>
+
+    <!-- ИСТОРИЯ -->
+    <div class="page" id="p-history">
+      <div class="section-title">История</div>
+      <div id="history-list"></div>
+    </div>
+
+    <!-- AI ЧАТ -->
+    <div class="page" id="p-ai">
+      <div class="chat-wrap">
+        <div class="quick-btns">
+          <button class="q-btn" onclick="quickMsg('Составь программу на неделю')">📅 Программа на неделю</button>
+          <button class="q-btn" onclick="quickMsg('Как правильно приседать?')">🦵 Техника приседа</button>
+          <button class="q-btn" onclick="quickMsg('Что есть после тренировки?')">🥗 Питание</button>
+          <button class="q-btn" onclick="quickMsg('Проанализируй мой прогресс')">📈 Прогресс</button>
+        </div>
+        <div class="messages" id="chat-messages"></div>
+        <div class="chat-input-row">
+          <textarea class="chat-inp" id="chat-inp" rows="1" placeholder="Спроси о тренировке..."></textarea>
+          <button class="chat-send" onclick="sendMsg()">↑</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- ПРОФИЛЬ -->
+    <div class="page" id="p-profile">
+      <div class="profile-header">
+        <div class="profile-av">💪</div>
+        <div class="profile-name" id="prof-name-disp">Атлет</div>
+        <div class="profile-goal" id="prof-goal-disp"></div>
+      </div>
+      <div class="card">
+        <div class="card-label">Личные данные</div>
+        <div class="field"><label class="field-label">Имя</label><input class="inp" id="p-name" placeholder="Владислав" oninput="saveProfile()"></div>
+        <div class="field"><label class="field-label">Вес (кг)</label><input class="inp" type="number" id="p-weight" placeholder="75" oninput="saveProfile()"></div>
+        <div class="field"><label class="field-label">Рост (см)</label><input class="inp" type="number" id="p-height" placeholder="180" oninput="saveProfile()"></div>
+        <div class="field"><label class="field-label">Цель</label>
+          <select class="inp" id="p-goal" onchange="saveProfile()">
+            <option>Набор массы</option><option>Похудение</option><option>Сила</option><option>Выносливость</option><option>Рельеф</option>
+          </select>
+        </div>
+        <div class="field"><label class="field-label">Уровень</label>
+          <select class="inp" id="p-level" onchange="saveProfile()">
+            <option>Новичок</option><option>Средний</option><option>Продвинутый</option>
+          </select>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- BOTTOM NAV -->
+  <nav class="nav">
+    <div class="nav-btn on" onclick="goPage('home')" id="nav-home"><div class="ic">🏠</div><div class="lb">Главная</div></div>
+    <div class="nav-btn" onclick="goPage('gym')" id="nav-gym"><div class="ic">🏋️</div><div class="lb">Зал</div></div>
+    <div class="nav-btn" onclick="goPage('workout')" id="nav-workout"><div class="ic">💪</div><div class="lb">Тренировка</div></div>
+    <div class="nav-btn" onclick="goPage('history')" id="nav-history"><div class="ic">📋</div><div class="lb">История</div></div>
+    <div class="nav-btn" onclick="goPage('ai')" id="nav-ai"><div class="ic">🤖</div><div class="lb">AI</div></div>
+  </nav>
+</div>
+
+<!-- MODAL: добавить тренажёр -->
+<div class="modal-overlay" id="modal" style="display:none" onclick="if(event.target===this)closeModal()">
+  <div class="modal">
+    <div class="modal-handle"></div>
+    <div class="modal-title">Добавить тренажёр</div>
+    <div class="field"><label class="field-label">Название</label><input class="inp" id="eq-name" placeholder="Штанга, Тяга верхнего блока..."></div>
+    <div class="field"><label class="field-label">Мышцы</label>
+      <div class="chips" id="eq-muscle-chips"></div>
+    </div>
+    <button class="btn btn-green" style="margin-top:12px" onclick="addEquipment()">Добавить</button>
+    <button class="btn btn-dark" onclick="closeModal()">Отмена</button>
+  </div>
+</div>
+
+<script>
+const MUSCLES = ['Грудь','Спина','Плечи','Бицепс','Трицепс','Квадрицепс','Бицепс бедра','Икры','Пресс','Ягодицы'];
+const API_URL = window.location.origin;
+
+// Telegram WebApp init
+const tg = window.Telegram?.WebApp;
+if (tg) { tg.ready(); tg.expand(); }
+
+// STATE
+let state = {
+  profile: { name:'', weight:'', height:'', goal:'Набор массы', level:'Средний' },
+  equipment: [],
+  workouts: [],
+  chatHistory: [],
+  currentPlan: null,
+  selectedMuscles: [],
+  eqSelectedMuscles: [],
+};
+
+// STORAGE
+function save() { localStorage.setItem('gymai', JSON.stringify(state)); }
+function load() {
+  const d = localStorage.getItem('gymai');
+  if (d) state = { ...state, ...JSON.parse(d) };
+}
+
+// INIT
+load();
+setTimeout(() => {
+  document.getElementById('splash').style.opacity = '0';
+  setTimeout(() => {
+    document.getElementById('splash').style.display = 'none';
+    document.getElementById('app').classList.add('show');
+    initUI();
+  }, 400);
+}, 1600);
+
+function initUI() {
+  // Profile
+  const p = state.profile;
+  document.getElementById('p-name').value   = p.name || '';
+  document.getElementById('p-weight').value = p.weight || '';
+  document.getElementById('p-height').value = p.height || '';
+  document.getElementById('p-goal').value   = p.goal || 'Набор массы';
+  document.getElementById('p-level').value  = p.level || 'Средний';
+  updateProfileDisplay();
+
+  // Muscle chips (workout)
+  const mc = document.getElementById('muscle-chips');
+  mc.innerHTML = '';
+  MUSCLES.forEach(m => {
+    const c = document.createElement('div');
+    c.className = 'chip';
+    c.textContent = m;
+    c.onclick = () => { c.classList.toggle('on'); state.selectedMuscles = [...document.querySelectorAll('#muscle-chips .chip.on')].map(x=>x.textContent); };
+    mc.appendChild(c);
+  });
+
+  // Muscle chips (eq modal)
+  const emc = document.getElementById('eq-muscle-chips');
+  emc.innerHTML = '';
+  MUSCLES.forEach(m => {
+    const c = document.createElement('div');
+    c.className = 'chip';
+    c.textContent = m;
+    c.onclick = () => { c.classList.toggle('on'); state.eqSelectedMuscles = [...document.querySelectorAll('#eq-muscle-chips .chip.on')].map(x=>x.textContent); };
+    emc.appendChild(c);
+  });
+
+  renderEquipment();
+  renderHistory();
+  updateStats();
+  updateEqHint();
+
+  // Initial chat message
+  if (state.chatHistory.length === 0) {
+    addChatMsg('ai', 'Привет! 👋 Я твой AI-тренер.\n\nЗнаю твой зал и цели. Спроси о тренировках, питании или технике — отвечу с учётом твоего оборудования!');
+  } else {
+    state.chatHistory.forEach(m => addChatMsg(m.role === 'assistant' ? 'ai' : 'user', m.content, false));
+  }
+}
+
+function goPage(name) {
+  document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+  document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('on'));
+  document.getElementById('p-' + (name === 'profile' ? 'profile' : name)).classList.add('active');
+  const nb = document.getElementById('nav-' + name);
+  if (nb) nb.classList.add('on');
+}
+
+// STATS
+function updateStats() {
+  document.getElementById('s-wo').textContent = state.workouts.length;
+  document.getElementById('s-eq').textContent = state.equipment.length;
+  const p = state.profile;
+  document.getElementById('greeting').textContent = `Привет${p.name ? ', ' + p.name : ''}! 👋`;
+  if (state.workouts.length > 0) {
+    const lw = state.workouts[0];
+    document.getElementById('last-wo-card').style.display = '';
+    document.getElementById('last-wo-name').textContent = lw.name;
+    document.getElementById('last-wo-date').textContent = lw.date;
+  }
+}
+
+function updateEqHint() {
+  const hint = document.getElementById('eq-hint');
+  if (state.equipment.length === 0) {
+    hint.textContent = '⚠️ Добавь тренажёры в «Зал» — тогда AI составит точный план';
+  } else {
+    hint.textContent = '🏋️ ' + state.equipment.slice(0,3).map(e=>e.name).join(' · ') + (state.equipment.length > 3 ? ` +${state.equipment.length-3}` : '');
+  }
+}
+
+// EQUIPMENT
+function renderEquipment() {
+  const el = document.getElementById('eq-list');
+  el.innerHTML = '';
+  state.equipment.forEach((eq, i) => {
+    const d = document.createElement('div');
+    d.className = 'eq-card';
+    d.innerHTML = `
+      <div class="eq-img">🏋️</div>
+      <button class="eq-del" onclick="delEq(${i})">×</button>
+      <div class="eq-body">
+        <div class="eq-name">${eq.name}</div>
+        <div class="eq-muscles">${(eq.muscles||[]).map(m=>`<span class="eq-m">${m}</span>`).join('')}</div>
+      </div>`;
+    el.appendChild(d);
+  });
+}
+
+function showAddModal() { document.getElementById('modal').style.display = 'flex'; document.getElementById('eq-name').value = ''; document.querySelectorAll('#eq-muscle-chips .chip').forEach(c=>c.classList.remove('on')); state.eqSelectedMuscles = []; }
+function closeModal() { document.getElementById('modal').style.display = 'none'; }
+
+function addEquipment() {
+  const name = document.getElementById('eq-name').value.trim();
+  if (!name) return;
+  state.equipment.push({ name, muscles: state.eqSelectedMuscles });
+  save(); renderEquipment(); updateStats(); updateEqHint(); closeModal();
+}
+
+function delEq(i) { state.equipment.splice(i, 1); save(); renderEquipment(); updateStats(); updateEqHint(); }
+
+// WORKOUT GENERATION
+async function generateWorkout() {
+  if (state.equipment.length === 0) { alert('Сначала добавь тренажёры в разделе «Зал»!'); return; }
+  const btn = document.getElementById('gen-btn');
+  btn.disabled = true; btn.textContent = '⏳ Claude думает...';
+
+  const eqDesc = state.equipment.map(e => `- ${e.name} (мышцы: ${e.muscles.join(', ')})`).join('\n');
+  const focus  = state.selectedMuscles;
+  const wtype  = document.getElementById('wtype').value;
+  const p      = state.profile;
+
+  const prompt = `Составь тренировку ТОЛЬКО на этом оборудовании:\n${eqDesc}\n\nПрофиль: цель — ${p.goal}, уровень — ${p.level}${p.weight?`, вес — ${p.weight} кг`:''}.\nТип: ${wtype}.${focus.length?` Акцент: ${focus.join(', ')}.':''}\n\nОтветь ТОЛЬКО JSON без markdown:\n{"name":"Название","duration":"~60 мин","exercises":[{"name":"Упражнение","equipment":"Тренажёр","sets":3,"reps":"8-10","weight":"70 кг","rest":"90 сек","tip":"Подсказка"}],"notes":"Рекомендации"}`;
+
+  try {
+    const res  = await fetch('/api/claude', { method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify({ messages:[{role:'user',content:prompt}], max_tokens:1200 }) });
+    const data = await res.json();
+    const plan = JSON.parse(data.text.replace(/```json|```/g,'').trim());
+    state.currentPlan = plan;
+    renderPlan(plan);
+  } catch(e) {
+    alert('Ошибка генерации. Проверь соединение.');
+  }
+  btn.disabled = false; btn.textContent = '✨ Сгенерировать';
+}
+
+function renderPlan(plan) {
+  document.getElementById('workout-form').style.display = 'none';
+  document.getElementById('workout-result').style.display = '';
+  document.getElementById('plan-name').textContent = plan.name;
+  document.getElementById('plan-dur').textContent  = plan.duration;
+  const el = document.getElementById('plan-exercises');
+  el.innerHTML = '';
+  plan.exercises.forEach(ex => {
+    el.innerHTML += `<div class="ex-card">
+      <div class="ex-name">${ex.name}</div>
+      <div class="ex-eq">🏋️ ${ex.equipment}</div>
+      <div class="ex-stats">
+        <div class="ex-stat"><div class="ex-stat-val">${ex.sets}×${ex.reps}</div><div>подходы</div></div>
+        <div class="ex-stat"><div class="ex-stat-val">${ex.weight}</div><div>вес</div></div>
+        <div class="ex-stat"><div class="ex-stat-val">${ex.rest}</div><div>отдых</div></div>
+      </div>
+      ${ex.tip?`<div class="ex-tip">💡 ${ex.tip}</div>`:''}
+    </div>`;
+  });
+  document.getElementById('plan-notes').textContent = '📝 ' + plan.notes;
+}
+
+function saveWorkout() {
+  if (!state.currentPlan) return;
+  state.workouts.unshift({ name: state.currentPlan.name, date: new Date().toLocaleDateString('ru'), exercises: state.currentPlan.exercises.map(e=>e.name) });
+  save(); updateStats(); renderHistory();
+  if (tg) tg.showAlert('Тренировка сохранена! 💪');
+  else alert('Тренировка сохранена! 💪');
+}
+
+function resetWorkout() {
+  document.getElementById('workout-form').style.display = '';
+  document.getElementById('workout-result').style.display = 'none';
+  state.currentPlan = null;
+}
+
+// HISTORY
+function renderHistory() {
+  const el = document.getElementById('history-list');
+  if (state.workouts.length === 0) { el.innerHTML = '<div style="text-align:center;color:var(--text3);padding:40px 0">Тренировок ещё нет 💪</div>'; return; }
+  el.innerHTML = state.workouts.map(w => `
+    <div class="wo-item">
+      <div class="wo-name">${w.name}</div>
+      <div class="wo-date">${w.date}</div>
+      <div class="wo-exercises">${(w.exercises||[]).map(e=>`<span class="wo-ex">${e}</span>`).join('')}</div>
+    </div>`).join('');
+}
+
+// PROFILE
+function saveProfile() {
+  state.profile = {
+    name:   document.getElementById('p-name').value,
+    weight: document.getElementById('p-weight').value,
+    height: document.getElementById('p-height').value,
+    goal:   document.getElementById('p-goal').value,
+    level:  document.getElementById('p-level').value,
+  };
+  save(); updateProfileDisplay(); updateStats();
+}
+
+function updateProfileDisplay() {
+  const p = state.profile;
+  document.getElementById('prof-name-disp').textContent = p.name || 'Атлет';
+  document.getElementById('prof-goal-disp').textContent = p.goal || '';
+}
+
+// CHAT
+function addChatMsg(role, text, scroll = true) {
+  const el = document.getElementById('chat-messages');
+  const d = document.createElement('div');
+  d.className = `msg${role==='user'?' u':''}`;
+  d.innerHTML = `<div class="msg-av ${role==='ai'?'ai':'u'}">${role==='ai'?'AI':'Я'}</div><div class="msg-bbl ${role==='ai'?'ai':'u'}">${text}</div>`;
+  el.appendChild(d);
+  if (scroll) el.scrollTop = el.scrollHeight;
+}
+
+function quickMsg(t) { document.getElementById('chat-inp').value = t; sendMsg(); }
+
+async function sendMsg() {
+  const inp  = document.getElementById('chat-inp');
+  const text = inp.value.trim();
+  if (!text) return;
+  inp.value = '';
+
+  addChatMsg('user', text);
+  state.chatHistory.push({ role:'user', content:text });
+
+  // typing indicator
+  const el  = document.getElementById('chat-messages');
+  const dot = document.createElement('div');
+  dot.className = 'msg'; dot.id = 'typing';
+  dot.innerHTML = `<div class="msg-av ai">AI</div><div class="msg-bbl ai"><div class="dots"><span></span><span></span><span></span></div></div>`;
+  el.appendChild(dot); el.scrollTop = el.scrollHeight;
+
+  const p     = state.profile;
+  const eqCtx = state.equipment.map(e=>`- ${e.name} (${e.muscles.join(', ')})`).join('\n') || '(не добавлены)';
+  const sys   = `Ты персональный AI-тренер. Отвечай по-русски кратко. Предлагай упражнения только на оборудовании пользователя.\nПрофиль: цель — ${p.goal}, уровень — ${p.level}${p.weight?`, вес — ${p.weight} кг`:''}.\nОборудование:\n${eqCtx}`;
+
+  try {
+    const res  = await fetch('/api/claude', { method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify({ system: sys, messages: state.chatHistory.slice(-20), max_tokens:800 }) });
+    const data = await res.json();
+    document.getElementById('typing')?.remove();
+    addChatMsg('ai', data.text);
+    state.chatHistory.push({ role:'assistant', content:data.text });
+    if (state.chatHistory.length > 40) state.chatHistory = state.chatHistory.slice(-40);
+    save();
+  } catch(e) {
+    document.getElementById('typing')?.remove();
+    addChatMsg('ai', 'Ошибка соединения. Попробуй ещё раз.');
+  }
+}
+
+document.getElementById('chat-inp').addEventListener('keydown', e => { if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); sendMsg(); } });
+</script>
+</body>
+</html>
