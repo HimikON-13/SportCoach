@@ -47,8 +47,8 @@ body{font-family:'Manrope',-apple-system,sans-serif;color:var(--text);font-size:
 /* NAV */
 .nav{position:fixed;bottom:0;left:0;right:0;background:rgba(0,0,0,0.95);backdrop-filter:blur(30px);border-top:1px solid var(--border);display:flex;align-items:center;padding:10px 0 calc(10px + env(safe-area-inset-bottom));z-index:100}
 .nb{flex:1;display:flex;flex-direction:column;align-items:center;gap:4px;cursor:pointer;padding:4px 0}
-.nb svg{width:22px;height:22px;stroke:var(--text3);fill:none;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round;transition:all .2s}
-.nb span{font-size:10px;font-weight:700;color:var(--text3);letter-spacing:.3px;transition:color .2s}
+.nb svg{width:22px;height:22px;stroke:#666;fill:none;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round;transition:all .2s}
+.nb span{font-size:10px;font-weight:700;color:#666;letter-spacing:.3px;transition:color .2s}
 .nb.on svg{stroke:var(--green)}
 .nb.on span{color:var(--green)}
 .nb-cam{flex:0 0 64px}
@@ -238,6 +238,8 @@ select.inp{cursor:pointer}
 .period-btn{padding:6px 10px;border-radius:9px;border:none;font-family:"Manrope",sans-serif;font-size:12px;font-weight:700;cursor:pointer;background:transparent;color:var(--text2);transition:all .15s}
 .period-btn.on{background:var(--bg4);color:var(--text)}
 
+.rest-preset{background:var(--bg3);border:1px solid var(--border2);color:var(--text2);font-family:'Manrope',sans-serif;font-size:13px;font-weight:700;padding:10px;border-radius:12px;cursor:pointer;transition:all .15s}
+.rest-preset:active{background:var(--green-dim);border-color:var(--green);color:var(--green)}
 @keyframes pulse{0%,100%{opacity:.2}50%{opacity:1}}
 .dots span{display:inline-block;width:6px;height:6px;background:var(--text2);border-radius:50%;margin:0 2px;animation:pulse 1.2s infinite}
 .dots span:nth-child(2){animation-delay:.2s}
@@ -256,10 +258,8 @@ input[type=file]{display:none}
 <div id="app">
   <div class="tb">
     <div class="tb-logo">Gym<em>AI</em></div>
-    <div class="tb-r">
-      <div class="tb-btn" onclick="goPage('ai')" style="background:var(--green);border-color:var(--green)">
-        <svg viewBox="0 0 24 24" style="stroke:#000"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
-      </div>
+    <div class="tb-btn" onclick="goPage('ai')" style="background:var(--green);border:none">
+      <svg viewBox="0 0 24 24" style="stroke:#000;width:16px;height:16px;fill:none;stroke-width:2;stroke-linecap:round;stroke-linejoin:round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
     </div>
   </div>
 
@@ -286,7 +286,7 @@ input[type=file]{display:none}
           </svg>
           <div class="ring-center">
             <div class="ring-val" id="ring-val">0</div>
-            <div class="ring-unit">тонн</div>
+            <div class="ring-unit">кг</div>
           </div>
         </div>
         <div class="ring-label" id="ring-label">Объём за день</div>
@@ -307,6 +307,13 @@ input[type=file]{display:none}
         <div class="wo-type-grid" id="wtype-grid"></div>
         <div class="sec-lbl">Акцент на зоны</div>
         <div class="chips" id="muscle-chips"></div>
+        <div id="custom-wtype-wrap" style="display:none;margin-top:12px"><div class="flbl" style="margin-bottom:6px">Опиши свою тренировку</div><input class="inp" id="custom-wtype-inp" placeholder="Например: растяжка, функциональная тренировка..."></div>
+        <div class="field" id="gym-select-wrap" style="margin-top:12px">
+          <label class="flbl">Зал</label>
+          <select class="inp" id="gym-selector" onchange="onGymSelect()">
+            <option value="">Все тренажёры</option>
+          </select>
+        </div>
         <div class="hint-row" id="eq-hint">Загрузка...</div>
         <button class="btn btn-p" id="gen-btn" onclick="generateWorkout()" style="margin-top:4px">Сгенерировать</button>
       </div>
@@ -327,13 +334,25 @@ input[type=file]{display:none}
 
     <!-- ЗАЛ -->
     <div class="page" id="p-gym">
-      <div class="sec-lbl" style="margin-top:8px">Мой зал</div>
-      <div class="add-zone" onclick="openCam()">
-        <div class="az-ic"><svg viewBox="0 0 24 24"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/><circle cx="12" cy="13" r="4"/></svg></div>
-        <div style="font-size:14px;font-weight:700;margin-bottom:3px">Добавить тренажёр</div>
-        <div style="font-size:12px;color:var(--text2);font-weight:500">фото или вручную</div>
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-top:8px;margin-bottom:16px">
+        <div class="sec-lbl" style="margin:0">Мои залы</div>
+        <button onclick="openNewGymModal()" style="background:var(--green);border:none;color:#000;font-family:'Manrope',sans-serif;font-size:12px;font-weight:700;padding:7px 14px;border-radius:10px;cursor:pointer">+ Новый зал</button>
       </div>
-      <div class="eq-grid" id="eq-list"></div>
+      <div id="gyms-list"></div>
+      <!-- Single gym view -->
+      <div id="gym-detail" style="display:none">
+        <div style="display:flex;align-items:center;gap:10px;margin-bottom:16px">
+          <button onclick="backToGyms()" style="background:var(--bg3);border:1px solid var(--border2);color:var(--text2);font-family:'Manrope',sans-serif;font-size:13px;font-weight:700;padding:7px 12px;border-radius:10px;cursor:pointer">← Назад</button>
+          <div style="font-size:18px;font-weight:800;letter-spacing:-.3px;flex:1" id="gym-detail-name"></div>
+          <button onclick="deleteCurrentGym()" style="background:none;border:none;color:var(--text3);font-size:20px;cursor:pointer">×</button>
+        </div>
+        <div class="add-zone" onclick="openCamForCurrentGym()">
+          <div class="az-ic"><svg viewBox="0 0 24 24"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/><circle cx="12" cy="13" r="4"/></svg></div>
+          <div style="font-size:14px;font-weight:700;margin-bottom:3px">Добавить тренажёр</div>
+          <div style="font-size:12px;color:var(--text2);font-weight:500">фото или вручную</div>
+        </div>
+        <div class="eq-grid" id="eq-list"></div>
+      </div>
     </div>
 
     <!-- ИСТОРИЯ + ПРОГРЕСС -->
@@ -357,6 +376,16 @@ input[type=file]{display:none}
         <button class="nut-add-btn" onclick="openNutModal()">Добавить приём пищи</button>
         <div id="meals-list"></div>
       </div>
+      </div><!-- end ptab-info-content -->
+
+      <!-- Мои залы tab in profile -->
+      <div id="ptab-eq-content" style="display:none">
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:14px">
+          <div class="sec-lbl" style="margin:0">Мои залы</div>
+          <button onclick="openNewGymModal()" style="background:var(--green);border:none;color:#000;font-family:'Manrope',sans-serif;font-size:12px;font-weight:700;padding:7px 14px;border-radius:10px;cursor:pointer">+ Новый зал</button>
+        </div>
+        <div id="prof-gyms-list"></div>
+      </div>
     </div>
 
     <!-- AI -->
@@ -378,6 +407,12 @@ input[type=file]{display:none}
 
     <!-- ПРОФИЛЬ -->
     <div class="page" id="p-profile">
+      <!-- Profile tabs -->
+      <div style="display:flex;gap:0;margin-bottom:18px;background:var(--bg3);border-radius:12px;padding:3px">
+        <button id="ptab-info" onclick="switchProfTab('info')" style="flex:1;padding:8px;border:none;border-radius:10px;font-family:'Manrope',sans-serif;font-size:13px;font-weight:700;cursor:pointer;background:var(--bg4);color:var(--text)">Профиль</button>
+        <button id="ptab-eq" onclick="switchProfTab('eq')" style="flex:1;padding:8px;border:none;border-radius:10px;font-family:'Manrope',sans-serif;font-size:13px;font-weight:700;cursor:pointer;background:transparent;color:var(--text2)">Мои залы</button>
+      </div>
+      <div id="ptab-info-content">
       <div class="prof-hdr">
         <div class="prof-photo" onclick="document.getElementById('ph-inp').click()">
           <img id="prof-img" style="display:none">
@@ -393,10 +428,10 @@ input[type=file]{display:none}
       <input type="file" accept="image/*" id="ph-inp" onchange="onPhoto(this)">
       <div style="background:var(--bg3);border-radius:18px;padding:18px;margin-bottom:12px;border:1px solid var(--border)">
         <div class="sec-lbl" style="margin-top:0;margin-bottom:14px">Основные данные</div>
-        <div class="field"><label class="flbl">Имя</label><input class="inp" id="p-name" placeholder="Владислав" oninput="saveProf()"></div>
+        <div class="field"><label class="flbl">Имя</label><input class="inp" id="p-name" placeholder="Введите ваше имя" oninput="saveProf()"></div>
         <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px">
-          <div class="field"><label class="flbl">Вес (кг)</label><input class="inp" type="number" id="p-weight" placeholder="75" oninput="saveProf()"></div>
-          <div class="field"><label class="flbl">Рост (см)</label><input class="inp" type="number" id="p-height" placeholder="180" oninput="saveProf()"></div>
+          <div class="field"><label class="flbl">Вес (кг)</label><input class="inp" type="number" id="p-weight" placeholder="Введите ваш вес" oninput="saveProf()"></div>
+          <div class="field"><label class="flbl">Рост (см)</label><input class="inp" type="number" id="p-height" placeholder="Введите ваш рост" oninput="saveProf()"></div>
         </div>
         <div class="field"><label class="flbl">Цель</label>
           <select class="inp" id="p-goal" onchange="saveProf()">
@@ -432,13 +467,13 @@ input[type=file]{display:none}
       <svg viewBox="0 0 24 24"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
       <span>Главная</span>
     </div>
-    <div class="nb" onclick="goPage('workout')" id="nav-workout">
-      <svg viewBox="0 0 24 24"><path d="M6.5 6.5h11M6.5 17.5h11M6 12h12M3 6.5h.5M3 17.5h.5M20.5 6.5H21M20.5 17.5H21"/></svg>
-      <span>Тренировка</span>
+    <div class="nb" onclick="goPage('gym')" id="nav-gym">
+      <svg viewBox="0 0 24 24"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/><circle cx="12" cy="13" r="4"/></svg>
+      <span>Тренажёры</span>
     </div>
-    <div class="nb nb-cam" onclick="openCam()">
-      <div class="cam-btn">
-        <svg viewBox="0 0 24 24"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/><circle cx="12" cy="13" r="4"/></svg>
+    <div class="nb nb-cam" onclick="goPage('workout')">
+      <div class="cam-btn" style="overflow:hidden;padding:0">
+        <img src="data:image/png;base64,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" style="width:100%;height:100%;object-fit:cover;border-radius:16px">
       </div>
     </div>
     <div class="nb" onclick="goPage('history')" id="nav-history">
@@ -458,7 +493,44 @@ input[type=file]{display:none}
     <div class="rt-label">Отдых</div>
     <div class="rt-time" id="rt-time">1:30</div>
   </div>
-  <button class="rt-skip" onclick="skipRest()">Пропустить</button>
+  <div style="display:flex;gap:8px;align-items:center">
+    <button onclick="openRestEdit()" style="background:var(--bg4);border:1px solid var(--border2);color:var(--text2);font-family:'Manrope',sans-serif;font-size:11px;font-weight:700;padding:6px 10px;border-radius:8px;cursor:pointer">Изменить</button>
+    <button class="rt-skip" onclick="skipRest()">Пропустить</button>
+  </div>
+</div>
+
+<!-- MODAL: новый зал -->
+<div class="mo" id="new-gym-modal" style="display:none" onclick="if(event.target===this)document.getElementById('new-gym-modal').style.display='none'">
+  <div class="md">
+    <div class="md-handle"></div>
+    <div class="md-title">Новый зал</div>
+    <div class="field"><label class="flbl">Название зала</label><input class="inp" id="new-gym-name" placeholder="World Class, FitCurves, Домашний зал..."></div>
+    <button class="btn btn-p" onclick="createGym()" style="margin-top:4px">Создать зал</button>
+    <button class="btn btn-s" onclick="document.getElementById('new-gym-modal').style.display='none'">Отмена</button>
+  </div>
+</div>
+
+<!-- MODAL: таймер отдыха -->
+<div class="mo" id="rest-edit-modal" style="display:none" onclick="if(event.target===this)document.getElementById('rest-edit-modal').style.display='none'">
+  <div class="md">
+    <div class="md-handle"></div>
+    <div class="md-title">Время отдыха</div>
+    <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;margin-bottom:16px">
+      <button class="rest-preset" onclick="setRestPreset(30)">30 сек</button>
+      <button class="rest-preset" onclick="setRestPreset(60)">1 мин</button>
+      <button class="rest-preset" onclick="setRestPreset(90)">1:30</button>
+      <button class="rest-preset" onclick="setRestPreset(120)">2 мин</button>
+      <button class="rest-preset" onclick="setRestPreset(180)">3 мин</button>
+      <button class="rest-preset" onclick="setRestPreset(240)">4 мин</button>
+    </div>
+    <div style="display:flex;align-items:center;gap:10px;margin-bottom:16px">
+      <div class="field" style="flex:1;margin:0"><label class="flbl">Минуты</label><input class="inp" type="number" id="rest-min" min="0" max="10" value="1"></div>
+      <div style="font-size:24px;font-weight:800;margin-top:16px">:</div>
+      <div class="field" style="flex:1;margin:0"><label class="flbl">Секунды</label><input class="inp" type="number" id="rest-sec" min="0" max="59" value="30"></div>
+    </div>
+    <button class="btn btn-p" onclick="applyRestTime()">Применить</button>
+    <button class="btn btn-s" onclick="document.getElementById('rest-edit-modal').style.display='none'">Отмена</button>
+  </div>
 </div>
 
 <!-- MODAL: камера -->
@@ -540,7 +612,8 @@ var WTYPES = [
   {v:'Полное тело',d:'Всё сразу'},
   {v:'Верх тела',d:'Верх'},
   {v:'Низ тела',d:'Низ'},
-  {v:'Выносливость',d:'Кардио'}
+  {v:'Выносливость',d:'Кардио'},
+  {v:'Своё',d:'Написать своё'}
 ];
 var MUSCLE_MAP = {'Верх тела':['Грудь','Спина','Плечи','Бицепс','Трицепс'],'Низ тела':['Квадрицепс','Бицепс бедра','Икры','Ягодицы'],'Полное тело':['Грудь','Спина','Квадрицепс','Пресс'],'Силовая':[],'Гипертрофия':[],'Выносливость':[]};
 var CHAT_Q = {technique:'По какому упражнению интересует техника?',program:'На сколько дней в неделю тренируешься?',nutrition:'Хочешь узнать про питание до, после тренировки, или общий рацион?',progress:'Что тебя беспокоит в прогрессе?'};
@@ -550,7 +623,7 @@ if (tg) { tg.ready(); tg.expand(); }
 var S = {
   profile:{name:'',weight:'',height:'',goal:'Набор массы',level:'Средний',photo:''},
   measures:{chest:'',waist:'',hips:'',arm:'',thigh:'',calf:'',fat:''},
-  equipment:[],workouts:[],chatHistory:[],meals:[],
+  equipment:[],gyms:[],activeGymId:null,workouts:[],chatHistory:[],meals:[],
   selMuscles:[],eqMuscles:[],scanMuscles:[],
   selectedWType:'',currentPlan:null,scanPhoto:null,
   doneCount:0,totalSets:0
@@ -589,7 +662,7 @@ function init(){
   makeChips('muscle-chips',MUSCLES,'selMuscles',null);
   makeChips('mn-chips',MUSCLES,'eqMuscles','mn-cw');
   makeChips('sr-chips',MUSCLES,'scanMuscles','sr-cw');
-  renderEq();renderHistory();renderProgress();renderNutrition();updateHome();
+  renderGyms();renderEq();renderHistory();renderProgress();renderNutrition();updateHome();updateGymSelector();
   if(!S.chatHistory||S.chatHistory.length===0){
     addMsg('ai','Привет! Я твой AI-тренер. Знаю твой зал, параметры и цели. Спрашивай!');
   } else {
@@ -602,6 +675,10 @@ function goPage(name){
   document.querySelectorAll('.nb').forEach(function(b){b.classList.remove('on');});
   var pg=document.getElementById('p-'+name);if(pg)pg.classList.add('active');
   var nb=document.getElementById('nav-'+name);if(nb)nb.classList.add('on');
+  if(name==='workout'){var cb=document.querySelector('.nb-cam');if(cb)cb.classList.add('on');}
+  // hide topbar on profile
+  var tb=document.querySelector('.tb');
+  if(tb)tb.style.display=name==='profile'?'none':'';
 }
 
 // ── WEEK VOLUME RING ──────────────────────────────────────────
@@ -609,10 +686,9 @@ function updateHome(){
   var wo=S.workouts||[];
   var filtered=typeof filterWoByPeriod==='function'?filterWoByPeriod(wo):wo;
   var vol=filtered.reduce(function(a,w){return a+(w.volume||0);},0);
-  var tons=(vol/1000).toFixed(1);
-  document.getElementById('ring-val').textContent=tons;
-
-  // Ring animation (max = 10 tons target)
+  var kg=Math.round(vol);
+  document.getElementById('ring-val').textContent=kg;
+  // Ring animation (max = 10000 kg target)
   var pct=Math.min(vol/10000,1);
   var circ=2*Math.PI*95;
   var offset=circ*(1-pct);
@@ -628,9 +704,9 @@ function updateHome(){
   var el=document.getElementById('activity-feed');
   if(wo.length===0){el.innerHTML='<div style="color:var(--text2);font-size:13px;font-weight:500;padding:20px 0">Тренировок пока нет. Начни первую!</div>';return;}
   el.innerHTML=wo.slice(0,5).map(function(w){
-    var v=w.volume?((w.volume/1000).toFixed(1)+'т'):'—';
+    var v=w.volume?(Math.round(w.volume)+' кг'):'—';
     return '<div class="af-item"><div class="af-left"><div class="af-name">'+w.name+'</div><div class="af-date">'+w.date+'</div></div><div style="text-align:right"><div class="af-vol">'+v+'</div><div class="af-vol-unit">объём</div></div></div>';
-  }).join('');
+  });
 }
 
 // ── WORKOUT TYPES ─────────────────────────────────────────────
@@ -676,9 +752,129 @@ function setChips(cid,sk,vals){
 }
 
 // ── EQUIPMENT ─────────────────────────────────────────────────
+// ── GYM FOLDERS ──────────────────────────────────────────────
+function getActiveGymEq(){
+  if(!S.activeGymId) return S.equipment||[];
+  var gym=(S.gyms||[]).find(function(g){return g.id===S.activeGymId;});
+  return gym?gym.equipment:[];
+}
+
+function openNewGymModal(){
+  document.getElementById('new-gym-name').value='';
+  document.getElementById('new-gym-modal').style.display='flex';
+}
+
+function createGym(){
+  var name=document.getElementById('new-gym-name').value.trim();
+  if(!name)return;
+  if(!S.gyms)S.gyms=[];
+  var gym={id:Date.now(),name:name,equipment:[]};
+  S.gyms.push(gym);
+  sv();renderGyms();
+  document.getElementById('new-gym-modal').style.display='none';
+  openGymDetail(gym.id);
+}
+
+function renderGyms(){
+  var el=document.getElementById('gyms-list');
+  if(!el)return;
+  el.innerHTML='';
+  var gyms=S.gyms||[];
+  if(S.equipment&&S.equipment.length>0){
+    gyms=[{id:'legacy',name:'Мой зал',equipment:S.equipment}].concat(gyms);
+  }
+  if(gyms.length===0){
+    el.innerHTML='<div style="text-align:center;color:var(--text2);font-size:13px;padding:32px 0">Залы не добавлены. Нажми Новый зал.</div>';
+    updateGymSelector();
+    return;
+  }
+  gyms.forEach(function(g){
+    var cnt=(g.equipment||[]).length;
+    var suf=cnt===1?'':cnt>1&&cnt<5?'а':'ов';
+    var d=document.createElement('div');
+    d.style.cssText='display:flex;align-items:center;justify-content:space-between;padding:16px;background:var(--bg3);border-radius:16px;margin-bottom:10px;cursor:pointer;border:1px solid var(--border)';
+    d.innerHTML='<div><div style="font-size:16px;font-weight:800;margin-bottom:3px">'+g.name+'</div><div style="font-size:12px;color:var(--text2);font-weight:600">'+cnt+' тренажёр'+suf+'</div></div>';
+    (function(gid){d.onclick=function(){openGymDetail(gid);};})(g.id);
+    el.appendChild(d);
+  });
+  updateGymSelector();
+}
+
+function openGymDetail(gymId){
+  S.activeGymId=gymId;
+  sv();
+  document.getElementById('gyms-list').style.display='none';
+  var gymTopRow=document.querySelector('#p-gym > div:first-child');if(gymTopRow)gymTopRow.style.display='none';
+  document.getElementById('gym-detail').style.display='';
+  var gym=getAllGyms().find(function(g){return g.id==gymId;});
+  document.getElementById('gym-detail-name').textContent=gym?gym.name:'';
+  renderEq();
+}
+
+function backToGyms(){
+  S.activeGymId=null;sv();
+  document.getElementById('gyms-list').style.display='';
+  document.getElementById('gym-detail').style.display='none';
+  var topRow=document.querySelector('#p-gym > div:first-child');
+  if(topRow)topRow.style.display='';
+  renderGyms();
+}
+
+function getAllGyms(){
+  var gyms=S.gyms||[];
+  if(S.equipment&&S.equipment.length>0){
+    return [{id:'legacy',name:'Мой зал',equipment:S.equipment}].concat(gyms);
+  }
+  return gyms;
+}
+
+function deleteCurrentGym(){
+  if(!S.activeGymId||S.activeGymId==='legacy')return;
+  if(!confirm('Удалить этот зал и все его тренажёры?'))return;
+  S.gyms=(S.gyms||[]).filter(function(g){return g.id!==S.activeGymId;});
+  sv();backToGyms();
+}
+
+function openCamForCurrentGym(){
+  document.getElementById('cam-modal').style.display='flex';
+  document.getElementById('cm-upload').style.display='';
+  document.getElementById('cm-scanning').style.display='none';
+  document.getElementById('cm-result').style.display='none';
+  document.getElementById('cm-manual').style.display='none';
+}
+
+function openCam(){
+  openCamForCurrentGym();
+}
+
+function updateGymSelector(){
+  var sel=document.getElementById('gym-selector');if(!sel)return;
+  var gyms=getAllGyms();
+  sel.innerHTML='<option value="">Все тренажёры</option>'+gyms.map(function(g){return '<option value="'+g.id+'">'+g.name+'</option>';}).join('');
+  if(S.activeGymId)sel.value=S.activeGymId;
+}
+
+function onGymSelect(){
+  var v=document.getElementById('gym-selector').value;
+  S.activeGymId=v||null;sv();
+  updateEqHint();
+}
+
+function getEqForWorkout(){
+  if(!S.activeGymId){
+    // All equipment from all gyms
+    var all=(S.equipment||[]).slice();
+    (S.gyms||[]).forEach(function(g){all=all.concat(g.equipment||[]);});
+    return all;
+  }
+  var gym=getAllGyms().find(function(g){return g.id==S.activeGymId;});
+  return gym?gym.equipment:[];
+}
+
 function renderEq(){
-  var el=document.getElementById('eq-list');el.innerHTML='';
-  (S.equipment||[]).forEach(function(eq,i){
+  var el=document.getElementById('eq-list');if(!el)return;el.innerHTML='';
+  var eqArr=getActiveGymEq();
+  eqArr.forEach(function(eq,i){
     var ms=(eq.muscles||[]).map(function(m){return '<span class="eq-m">'+m+'</span>';}).join('');
     var img=eq.photo?'<img src="'+eq.photo+'" style="width:100%;height:100%;object-fit:cover">':'<svg viewBox="0 0 24 24" width="28" height="28" fill="none" stroke="var(--text3)" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M18 8h1a4 4 0 0 1 0 8h-1"/><path d="M2 8h16v9a4 4 0 0 1-4 4H6a4 4 0 0 1-4-4V8z"/><line x1="6" y1="1" x2="6" y2="4"/><line x1="10" y1="1" x2="10" y2="4"/><line x1="14" y1="1" x2="14" y2="4"/></svg>';
     var d=document.createElement('div');d.className='eq-card';
@@ -740,22 +936,41 @@ function resetScan(){document.getElementById('cm-result').style.display='none';d
 function showManual(){document.getElementById('cm-upload').style.display='none';document.getElementById('cm-manual').style.display='';document.getElementById('mn-name').value='';document.querySelectorAll('#mn-chips .chip').forEach(function(c){c.classList.remove('on');});S.eqMuscles=[];}
 function addManual(){
   var name=document.getElementById('mn-name').value.trim();if(!name)return;
-  S.equipment.push({name:name,muscles:getMusclesWithCustom('eqMuscles','mn-custom'),photo:null});
+  addEqToActiveGym({name:name,muscles:getMusclesWithCustom('eqMuscles','mn-custom'),photo:null});
   sv();renderEq();updateHome();document.getElementById('cam-modal').style.display='none';
 }
-function delEq(i){S.equipment.splice(i,1);sv();renderEq();updateHome();}
+
+function addEqToActiveGym(item){
+  if(!S.activeGymId||S.activeGymId==='legacy'){
+    if(!S.equipment)S.equipment=[];
+    S.equipment.push(item);
+  } else {
+    var gym=(S.gyms||[]).find(function(g){return g.id===S.activeGymId;});
+    if(gym){if(!gym.equipment)gym.equipment=[];gym.equipment.push(item);}
+  }
+}
+function delEq(i){
+  if(!S.activeGymId||S.activeGymId==='legacy'){
+    S.equipment.splice(i,1);
+  } else {
+    var gym=(S.gyms||[]).find(function(g){return g.id===S.activeGymId;});
+    if(gym)gym.equipment.splice(i,1);
+  }
+  sv();renderEq();updateHome();
+}
 
 // ── WORKOUT GENERATION ────────────────────────────────────────
 var updateEqHint=function(){
-  var eq=S.equipment||[];var h=document.getElementById('eq-hint');
-  if(eq.length===0)h.textContent='Добавь тренажёры через кнопку камеры';
+  var eq=getEqForWorkout?getEqForWorkout():(S.equipment||[]);var h=document.getElementById('eq-hint');if(!h)return;
+  if(eq.length===0)h.textContent='Добавь тренажёры в зал или выбери зал выше';
   else h.textContent=eq.slice(0,3).map(function(e){return e.name;}).join(', ')+(eq.length>3?' +' +(eq.length-3):'');
 };
 
 async function generateWorkout(){
-  var eq=S.equipment||[];
-  if(eq.length===0){alert('Сначала добавь тренажёры!');return;}
+  var eq=getEqForWorkout();
+  if(eq.length===0){alert('Сначала добавь тренажёры в зал!');return;}
   if(!S.selectedWType){alert('Выбери тип тренировки!');return;}
+  var actualWType=S.selectedWType==='Своё'?(document.getElementById('custom-wtype-inp').value.trim()||'Своя тренировка'):S.selectedWType;
   var btn=document.getElementById('gen-btn');btn.disabled=true;btn.textContent='Генерирую...';
   var p=S.profile||{};var m=S.measures||{};var focus=S.selMuscles||[];
   var eqLines=eq.map(function(e){return '- '+e.name+' ('+(e.muscles||[]).join(', ')+')';}).join('\n');
@@ -796,7 +1011,7 @@ function toggleSet(ei,si,restSec){
   btn.classList.toggle('done');
   S.doneCount+=wasDone?-1:1;
   updateWoProg();
-  if(!wasDone) startRest(restSec||90);
+  if(!wasDone) startRest(defaultRestSec||restSec||90);
   if(tg&&tg.HapticFeedback) tg.HapticFeedback.impactOccurred('light');
 }
 
@@ -832,6 +1047,28 @@ function stopRest(){
 }
 function skipRest(){stopRest();}
 
+var defaultRestSec = 90;
+
+function openRestEdit(){
+  var m=Math.floor(defaultRestSec/60), s=defaultRestSec%60;
+  document.getElementById('rest-min').value=m;
+  document.getElementById('rest-sec').value=s;
+  document.getElementById('rest-edit-modal').style.display='flex';
+}
+function setRestPreset(sec){
+  var m=Math.floor(sec/60),s=sec%60;
+  document.getElementById('rest-min').value=m;
+  document.getElementById('rest-sec').value=s;
+}
+function applyRestTime(){
+  var m=parseInt(document.getElementById('rest-min').value)||0;
+  var s=parseInt(document.getElementById('rest-sec').value)||0;
+  defaultRestSec=m*60+s;
+  document.getElementById('rest-edit-modal').style.display='none';
+  // restart timer with new time if running
+  if(restInterval){clearInterval(restInterval);startRest(defaultRestSec);}
+}
+
 function finishWorkout(){
   if(!S.currentPlan)return;
   var vol=(S.currentPlan.exercises||[]).reduce(function(a,ex){
@@ -848,6 +1085,12 @@ function finishWorkout(){
   resetWorkout();
 }
 
+function deleteWorkout(i){
+  if(!confirm('Удалить тренировку "'+S.workouts[i].name+'"?')) return;
+  S.workouts.splice(i,1);
+  sv();updateHome();renderHistory();renderProgress();
+}
+
 function resetWorkout(){
   document.getElementById('wo-form').style.display='';
   document.getElementById('wo-result').style.display='none';
@@ -858,10 +1101,10 @@ function resetWorkout(){
 function renderHistory(){
   var el=document.getElementById('history-list');var wo=S.workouts||[];
   if(wo.length===0){el.innerHTML='<div style="color:var(--text2);font-size:13px;font-weight:500;padding:24px 0">Тренировок пока нет</div>';return;}
-  el.innerHTML=wo.map(function(w){
-    var v=w.volume?((w.volume/1000).toFixed(1)+' т'):'—';
+  el.innerHTML=wo.map(function(w,wi){
+    var v=w.volume?(Math.round(w.volume)+' кг'):'—';
     var exs=(w.exercises||[]).map(function(e){return '<span class="hist-ex">'+e+'</span>';}).join(' · ');
-    return '<div class="hist-item"><div class="hist-row"><div><div class="hist-name">'+w.name+'</div><div class="hist-date">'+w.date+'</div></div><div style="text-align:right"><div class="hist-vol">'+v+'</div></div></div><div class="hist-exs" style="margin-top:8px">'+exs+'</div></div>';
+    return '<div class="hist-item"><div class="hist-row"><div><div class="hist-name">'+w.name+'</div><div class="hist-date">'+w.date+'</div></div><div style="display:flex;align-items:center;gap:10px"><div class="hist-vol">'+v+'</div><button onclick="deleteWorkout('+wi+')" style="background:none;border:none;color:var(--text3);font-size:20px;cursor:pointer;padding:0 4px;line-height:1">×</button></div></div><div class="hist-exs" style="margin-top:8px">'+exs+'</div></div>';
   }).join('');
 }
 
@@ -932,6 +1175,48 @@ function renderNutrition(){
 }
 
 // ── PROFILE ───────────────────────────────────────────────────
+function switchProfTab(tab){
+  ['info','eq'].forEach(function(t){
+    var btn=document.getElementById('ptab-'+t);
+    var cont=document.getElementById('ptab-'+t+'-content');
+    var on=t===tab;
+    if(btn){btn.style.background=on?'var(--bg4)':'transparent';btn.style.color=on?'var(--text)':'var(--text2)';}
+    if(cont)cont.style.display=on?'':'none';
+  });
+  if(tab==='eq')renderProfGyms();
+}
+
+function renderProfGyms(){
+  var el=document.getElementById('prof-gyms-list');if(!el)return;
+  el.innerHTML='';
+  var gyms=getAllGyms();
+  if(gyms.length===0){
+    el.innerHTML='<div style="color:var(--text2);font-size:13px;text-align:center;padding:24px 0">Залы не добавлены</div>';
+    return;
+  }
+  gyms.forEach(function(g){
+    var cnt=(g.equipment||[]).length;
+    var suf=cnt===1?'':cnt>1&&cnt<5?'а':'ов';
+    var d=document.createElement('div');
+    d.style.cssText='display:flex;align-items:center;justify-content:space-between;padding:14px;background:var(--bg3);border-radius:14px;margin-bottom:8px;border:1px solid var(--border)';
+    d.innerHTML='<div><div style="font-size:15px;font-weight:700;margin-bottom:2px">'+g.name+'</div><div style="font-size:12px;color:var(--text2);font-weight:600">'+cnt+' тренажёр'+suf+'</div></div>';
+    (function(gid){d.onclick=function(){goPage('gym');openGymDetail(gid);};})(g.id);
+    el.appendChild(d);
+  });
+}
+
+function renderProfEq(){
+  var el=document.getElementById('prof-eq-list');
+  if(!el)return;
+  var eq=S.equipment||[];
+  if(eq.length===0){el.innerHTML='<div style="color:var(--text2);font-size:13px;font-weight:500;padding:24px 0;text-align:center">Тренажёры не добавлены</div>';return;}
+  el.innerHTML=eq.map(function(e,i){
+    var img=e.photo?'<img src="'+e.photo+'" style="width:56px;height:56px;object-fit:cover;border-radius:12px;flex-shrink:0">':'<div style="width:56px;height:56px;background:var(--bg4);border-radius:12px;display:flex;align-items:center;justify-content:center;flex-shrink:0"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="var(--text3)" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M18 8h1a4 4 0 0 1 0 8h-1"/><path d="M2 8h16v9a4 4 0 0 1-4 4H6a4 4 0 0 1-4-4V8z"/></svg></div>';
+    var ms=(e.muscles||[]).map(function(m){return '<span style="font-size:10px;font-weight:700;background:var(--green-dim);color:var(--green);border-radius:4px;padding:2px 6px">'+m+'</span>';}).join(' ');
+    return '<div style="display:flex;align-items:center;gap:12px;padding:12px 0;border-bottom:1px solid var(--border)">'+img+'<div style="flex:1"><div style="font-size:14px;font-weight:700;margin-bottom:5px">'+e.name+'</div><div style="display:flex;flex-wrap:wrap;gap:3px">'+ms+'</div></div><button onclick="delEq('+i+');renderProfEq();" style="background:none;border:none;color:var(--text3);font-size:20px;cursor:pointer;padding:0 4px">×</button></div>';
+  }).join('');
+}
+
 function saveProf(){
   S.profile={name:document.getElementById('p-name').value,weight:document.getElementById('p-weight').value,height:document.getElementById('p-height').value,goal:document.getElementById('p-goal').value,level:document.getElementById('p-level').value,photo:(S.profile&&S.profile.photo)||''};
   sv();updateProfDisplay();
