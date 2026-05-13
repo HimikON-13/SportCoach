@@ -178,8 +178,8 @@ body{font-family:'Manrope',-apple-system,sans-serif;color:var(--text);font-size:
 .mi-lbl{font-size:10px;color:var(--text2);font-weight:700;letter-spacing:.5px;margin-top:3px;text-transform:uppercase}
 
 /* AI CHAT */
-.chat-wrap{display:flex;flex-direction:column;height:calc(100vh - 168px)}
-.msgs{flex:1;overflow-y:auto;padding-bottom:8px}
+.chat-wrap{display:flex;flex-direction:column}
+.msgs{height:calc(100vh - 320px);overflow-y:auto;padding-bottom:8px}
 .msgs::-webkit-scrollbar{display:none}
 .msg{display:flex;gap:8px;margin-bottom:14px}
 .msg.u{flex-direction:row-reverse}
@@ -194,6 +194,8 @@ body{font-family:'Manrope',-apple-system,sans-serif;color:var(--text);font-size:
 .q-btn{background:var(--bg3);border:1px solid var(--border);color:var(--text2);border-radius:20px;padding:7px 14px;font-size:12px;font-weight:700;white-space:nowrap;cursor:pointer;font-family:'Manrope',sans-serif;flex-shrink:0}
 .chat-row{display:flex;gap:8px;margin-top:10px;align-items:flex-end}
 .ci{flex:1;background:var(--bg3);border:1px solid var(--border2);color:var(--text);padding:12px 14px;border-radius:16px;font-size:14px;font-family:'Manrope',sans-serif;outline:none;resize:none;font-weight:500}
+#ai-input-bar{position:fixed;bottom:calc(90px + env(safe-area-inset-bottom));left:0;right:0;padding:8px 16px;background:var(--bg);display:none;gap:8px;align-items:flex-end;z-index:90;border-top:1px solid var(--border)}
+#ai-input-bar.visible{display:flex}
 .ci:focus{border-color:var(--green)}
 .cs{width:44px;height:44px;background:var(--green);border:none;border-radius:14px;cursor:pointer;display:flex;align-items:center;justify-content:center;flex-shrink:0}
 .cs svg{width:18px;height:18px;stroke:#000;fill:none;stroke-width:2.5;stroke-linecap:round;stroke-linejoin:round}
@@ -390,19 +392,18 @@ input[type=file]{display:none}
 
     <!-- AI -->
     <div class="page" id="p-ai">
-      <div class="chat-wrap">
-        <div class="q-btns">
-          <button class="q-btn" onclick="startChat('technique')">Техника</button>
-          <button class="q-btn" onclick="startChat('program')">Программа</button>
-          <button class="q-btn" onclick="startChat('nutrition')">Питание</button>
-          <button class="q-btn" onclick="startChat('progress')">Прогресс</button>
-        </div>
-        <div class="msgs" id="chat-msgs"></div>
-        <div class="chat-row">
-          <textarea class="ci" id="ci" rows="1" placeholder="Спросить..."></textarea>
-          <button class="cs" onclick="sendMsg()"><svg viewBox="0 0 24 24"><line x1="12" y1="19" x2="12" y2="5"/><polyline points="5 12 12 5 19 12"/></svg></button>
-        </div>
+      <div class="q-btns">
+        <button class="q-btn" onclick="startChat('technique')">Техника</button>
+        <button class="q-btn" onclick="startChat('program')">Программа</button>
+        <button class="q-btn" onclick="startChat('nutrition')">Питание</button>
+        <button class="q-btn" onclick="startChat('progress')">Прогресс</button>
       </div>
+      <div class="msgs" id="chat-msgs"></div>
+    </div>
+    <!-- AI input - fixed above nav -->
+    <div id="ai-input-bar">
+      <textarea class="ci" id="ci" rows="1" placeholder="Спросить..."></textarea>
+      <button class="cs" onclick="sendMsg()"><svg viewBox="0 0 24 24"><line x1="12" y1="19" x2="12" y2="5"/><polyline points="5 12 12 5 19 12"/></svg></button>
     </div>
 
     <!-- ПРОФИЛЬ -->
@@ -676,9 +677,10 @@ function goPage(name){
   var pg=document.getElementById('p-'+name);if(pg)pg.classList.add('active');
   var nb=document.getElementById('nav-'+name);if(nb)nb.classList.add('on');
   if(name==='workout'){var cb=document.querySelector('.nb-cam');if(cb)cb.classList.add('on');}
-  // hide topbar on profile
   var tb=document.querySelector('.tb');
-  if(tb)tb.style.display=name==='profile'?'none':'';
+  if(tb)tb.style.display=(name==='profile'||name==='ai')?'none':'';
+  var aib=document.getElementById('ai-input-bar');
+  if(aib)aib.className=name==='ai'?'visible':'';
 }
 
 // ── WEEK VOLUME RING ──────────────────────────────────────────
