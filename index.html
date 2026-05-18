@@ -22,7 +22,7 @@ body{font-family:'Manrope',-apple-system,sans-serif;color:var(--text);font-size:
 #splash{position:fixed;inset:0;background:#000;display:flex;flex-direction:column;align-items:center;justify-content:center;z-index:999;transition:opacity .6s}
 .sp-logo{font-size:38px;font-weight:900;letter-spacing:-2px;margin-bottom:6px}
 .sp-logo em{color:var(--green);font-style:normal}
-.sp-sub{font-size:11px;color:var(--text2);font-weight:700;letter-spacing:3px;text-transform:uppercase;margin-bottom:60px}
+.sp-sub{font-size:11px;color:var(--text2);font-weight:700;letter-spacing:3px;text-transform:uppercase;margin-bottom:20px}
 .sp-ring{width:60px;height:60px;border-radius:50%;border:2px solid var(--text3);border-top-color:var(--green);animation:spin 1s linear infinite}
 @keyframes spin{to{transform:rotate(360deg)}}
 
@@ -110,9 +110,9 @@ body{font-family:'Manrope',-apple-system,sans-serif;color:var(--text);font-size:
 .ex-name{font-size:16px;font-weight:800;letter-spacing:-.3px}
 .ex-eq-tag{font-size:11px;color:var(--text2);font-weight:600;margin-bottom:10px}
 .ex-sets-row{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:8px}
-.set-dot{width:44px;height:44px;border-radius:12px;border:1.5px solid var(--border2);background:var(--bg3);display:flex;flex-direction:column;align-items:center;justify-content:center;cursor:pointer;transition:all .2s;font-size:11px;font-weight:700;color:var(--text2)}
+.set-dot{width:58px;height:58px;border-radius:14px;border:1.5px solid var(--border2);background:var(--bg3);display:flex;flex-direction:column;align-items:center;justify-content:center;cursor:pointer;transition:all .2s;font-size:11px;font-weight:700;color:var(--text2)}
 .set-dot.done{background:var(--green-dim);border-color:var(--green);color:var(--green)}
-.set-dot-reps{font-size:13px;font-weight:800}
+.set-dot-reps{font-size:15px;font-weight:900}
 .tech-toggle{font-size:11px;font-weight:700;color:var(--text3);cursor:pointer;letter-spacing:.5px;text-transform:uppercase;border:none;background:none;font-family:inherit;padding:0}
 .tech-body{margin-top:10px;padding:12px;background:var(--bg3);border-radius:12px;font-size:13px;color:var(--text2);line-height:1.65;font-weight:500;display:none}
 .tech-body.open{display:block}
@@ -254,6 +254,7 @@ input[type=file]{display:none}
 <div id="splash">
   <div class="sp-logo">Gym<em>AI</em></div>
   <div class="sp-sub">персональный тренер</div>
+  <div id="sp-quote" style="font-size:13px;color:var(--text2);font-weight:500;text-align:center;max-width:260px;line-height:1.6;margin-bottom:40px;letter-spacing:.2px"></div>
   <div class="sp-ring"></div>
 </div>
 
@@ -640,6 +641,20 @@ function todayMeals(){
   return (S.meals||[]).filter(function(m){return m.date===today;});
 }
 
+var SPLASH_QUOTES=[
+  'Каждый подход — шаг к лучшей версии себя 💪',
+  'Тело достигает того, во что верит разум 🔥',
+  'Сегодняшняя боль — завтрашняя сила ⚡',
+  'Не жди идеального момента — создай его сам 🚀',
+  'Прогресс, а не совершенство — вот твоя цель 🎯',
+  'Каждая тренировка считается, даже в трудный день 💥',
+  'Ты сильнее, чем думаешь — докажи это сегодня 🏆',
+  'Успех — это сумма маленьких усилий каждый день ✨',
+  'Железо не лжёт — только ты решаешь кем стать 💎',
+  'Лучшее вложение — это вложение в себя 🌟'
+];
+(function(){var sq=document.getElementById('sp-quote');if(sq)sq.textContent=SPLASH_QUOTES[Math.floor(Math.random()*SPLASH_QUOTES.length)];})();
+
 setTimeout(function(){
   document.getElementById('splash').style.opacity='0';
   setTimeout(function(){
@@ -672,6 +687,27 @@ function init(){
 }
 
 function goPage(name){
+  // If leaving an active workout, prompt user
+  if(name!=='workout'&&S.currentPlan){
+    if(!confirm('Тренировка ещё идёт. Сохранить прогресс и выйти?')){
+      return;
+    }
+    // Save as incomplete workout
+    finishWorkout();
+    return;
+  }
+  document.querySelectorAll('.page').forEach(function(p){p.classList.remove('active');});
+  document.querySelectorAll('.nb').forEach(function(b){b.classList.remove('on');});
+  var pg=document.getElementById('p-'+name);if(pg)pg.classList.add('active');
+  var nb=document.getElementById('nav-'+name);if(nb)nb.classList.add('on');
+  if(name==='workout'){var cb=document.querySelector('.nb-cam');if(cb)cb.classList.add('on');}
+  var tb=document.querySelector('.tb');
+  if(tb)tb.style.display=(name==='profile'||name==='ai')?'none':'';
+  var aib=document.getElementById('ai-input-bar');
+  if(aib)aib.className=name==='ai'?'visible':'';
+}
+
+function navigateTo(name){
   document.querySelectorAll('.page').forEach(function(p){p.classList.remove('active');});
   document.querySelectorAll('.nb').forEach(function(b){b.classList.remove('on');});
   var pg=document.getElementById('p-'+name);if(pg)pg.classList.add('active');
@@ -698,9 +734,11 @@ function updateHome(){
   document.getElementById('ring-fill').style.strokeDashoffset=offset;
 
   var totalSets=wo.reduce(function(a,w){return a+(w.totalSets||0);},0);
+  var totalEq=(S.equipment||[]).length;
+  (S.gyms||[]).forEach(function(g){totalEq+=(g.equipment||[]).length;});
   document.getElementById('hs-wo').textContent=wo.length;
   document.getElementById('hs-sets').textContent=totalSets;
-  document.getElementById('hs-eq').textContent=(S.equipment||[]).length;
+  document.getElementById('hs-eq').textContent=totalEq;
 
   // Activity feed
   var el=document.getElementById('activity-feed');
@@ -708,7 +746,7 @@ function updateHome(){
   el.innerHTML=wo.slice(0,5).map(function(w){
     var v=w.volume?(Math.round(w.volume)+' кг'):'—';
     return '<div class="af-item"><div class="af-left"><div class="af-name">'+w.name+'</div><div class="af-date">'+w.date+'</div></div><div style="text-align:right"><div class="af-vol">'+v+'</div><div class="af-vol-unit">объём</div></div></div>';
-  });
+  }).join('');
 }
 
 // ── WORKOUT TYPES ─────────────────────────────────────────────
@@ -885,14 +923,6 @@ function renderEq(){
   });
 }
 
-function openCam(){
-  document.getElementById('cam-modal').style.display='flex';
-  document.getElementById('cm-upload').style.display='';
-  document.getElementById('cm-scanning').style.display='none';
-  document.getElementById('cm-result').style.display='none';
-  document.getElementById('cm-manual').style.display='none';
-}
-
 async function scanEquip(input){
   if(!input.files||!input.files[0])return;
   var file=input.files[0];
@@ -931,7 +961,7 @@ function getMusclesWithCustom(sk,customId){
 
 function confirmScan(){
   var name=document.getElementById('sr-name-inp').value.trim();if(!name)return;
-  S.equipment.push({name:name,muscles:getMusclesWithCustom('scanMuscles','sr-custom'),photo:S.scanPhoto});
+  addEqToActiveGym({name:name,muscles:getMusclesWithCustom('scanMuscles','sr-custom'),photo:S.scanPhoto});
   sv();renderEq();updateHome();document.getElementById('cam-modal').style.display='none';S.scanPhoto=null;
 }
 function resetScan(){document.getElementById('cm-result').style.display='none';document.getElementById('cm-upload').style.display='';S.scanPhoto=null;}
@@ -978,7 +1008,7 @@ async function generateWorkout(){
   var eqLines=eq.map(function(e){return '- '+e.name+' ('+(e.muscles||[]).join(', ')+')';}).join('\n');
   var mStr=(m.chest||m.waist)?'\nЗамеры: грудь '+(m.chest||'?')+', талия '+(m.waist||'?')+' см'+(m.fat?', жир '+m.fat+'%':''):'';
   var fStr=focus.length>0?' Акцент: '+focus.join(', ')+'.':'';
-  var prompt='Составь тренировку ТОЛЬКО на этом оборудовании:\n'+eqLines+'\n\nПрофиль: цель - '+(p.goal||'Набор массы')+', уровень - '+(p.level||'Средний')+(p.weight?', вес - '+p.weight+' кг':'')+(p.height?', рост - '+p.height+' см':'')+'.'+mStr+'\nТип: '+S.selectedWType+'.'+fStr+'\n\nОтветь ТОЛЬКО JSON без markdown и звёздочек:\n{"name":"Название","duration":"~60 мин","exercises":[{"name":"Упражнение","equipment":"Тренажёр","sets":3,"reps":"8-10","weight":"70 кг","rest":90,"technique":"Техника выполнения, 2-3 предложения"}],"notes":"Короткие рекомендации"}';
+  var prompt='Составь тренировку используя ТОЛЬКО это оборудование (не обязательно всё, выбери подходящее):\n'+eqLines+'\n\nПрофиль: цель - '+(p.goal||'Набор массы')+', уровень - '+(p.level||'Средний')+(p.weight?', вес - '+p.weight+' кг':'')+(p.height?', рост - '+p.height+' см':'')+'.'+mStr+'\nТип: '+S.selectedWType+'.'+fStr+'\n\nОтветь ТОЛЬКО JSON без markdown и звёздочек:\n{"name":"Название","duration":"~60 мин","exercises":[{"name":"Упражнение","equipment":"Тренажёр","sets":3,"reps":"8-10","weight":"70 кг","rest":90,"technique":"Техника выполнения, 2-3 предложения"}],"notes":"Короткие рекомендации"}';
   try{
     var res=await fetch('/api/claude',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({messages:[{role:'user',content:prompt}],max_tokens:1500})});
     var data=await res.json();
@@ -999,12 +1029,61 @@ function renderActivePlan(plan){
   (plan.exercises||[]).forEach(function(ex,ei){
     var sets='';
     for(var i=0;i<(ex.sets||3);i++){
-      sets+='<div class="set-dot" id="sd-'+ei+'-'+i+'" onclick="toggleSet('+ei+','+i+','+ex.rest+')"><div class="set-dot-reps">'+ex.reps+'</div><div style="font-size:9px;color:var(--text3);font-weight:700;margin-top:1px">'+ex.weight+'</div></div>';
+      sets+='<div class="set-dot" id="sd-'+ei+'-'+i+'" onclick="toggleSet('+ei+','+i+','+ex.rest+')"><div class="set-dot-reps" id="sr-'+ei+'">'+ex.reps+'</div><div style="font-size:10px;color:var(--text3);font-weight:700;margin-top:1px" id="sw-'+ei+'">'+ex.weight+'</div></div>';
     }
     var item=document.createElement('div');item.className='ex-item';
-    item.innerHTML='<div class="ex-top-row"><div class="ex-name">'+ex.name+'</div><span style="font-size:11px;color:var(--text2);font-weight:700">'+ex.sets+'×'+ex.reps+'</span></div><div class="ex-eq-tag">'+ex.equipment+' · отдых '+(ex.rest||90)+'с</div><div class="ex-sets-row">'+sets+'</div>'+(ex.technique?'<button class="tech-toggle" onclick="toggleTech('+ei+')">Показать технику</button><div class="tech-body" id="tb-'+ei+'">'+ex.technique+'</div>':'');
+    item.innerHTML='<div class="ex-top-row"><div class="ex-name">'+ex.name+'</div></div>'
+      +'<div class="ex-eq-tag">'+ex.equipment+' · отдых '+(ex.rest||90)+'с</div>'
+      +'<div class="ex-sets-row">'+sets+'</div>'
+      +'<div style="display:flex;gap:8px;margin-top:8px;align-items:center">'
+      +'<div style="flex:1"><div class="flbl" style="margin-bottom:4px">Вес (кг)</div><input class="inp" type="number" id="ew-'+ei+'" value="'+parseFloat(ex.weight||0)+'" oninput="updateExField('+ei+',\'weight\',this.value)" style="padding:8px 10px;font-size:13px"></div>'
+      +'<div style="flex:1"><div class="flbl" style="margin-bottom:4px">Повторения</div><input class="inp" type="text" id="er-'+ei+'" value="'+ex.reps+'" oninput="updateExField('+ei+',\'reps\',this.value)" style="padding:8px 10px;font-size:13px"></div>'
+      +'<div style="flex:0 0 56px"><div class="flbl" style="margin-bottom:4px">Подходы</div><input class="inp" type="number" id="es-'+ei+'" value="'+(ex.sets||3)+'" min="1" max="10" oninput="updateExSets('+ei+',this.value)" style="padding:8px 10px;font-size:13px"></div>'
+      +'</div>'
+      +'<button style="background:var(--bg3);border:1px solid var(--border2);color:var(--text2);font-family:Manrope,sans-serif;font-size:11px;font-weight:700;padding:6px 12px;border-radius:8px;cursor:pointer;margin-top:6px" onclick="applyToAllSets('+ei+')" title="Применить вес и повторения ко всем подходам">Применить ко всем подходам</button>'
+      +(ex.technique?'<button class="tech-toggle" onclick="toggleTech('+ei+')" style="margin-top:6px;display:block">Показать технику</button><div class="tech-body" id="tb-'+ei+'">'+ex.technique+'</div>':'');
     el.appendChild(item);
   });
+}
+
+function updateExField(ei,field,val){
+  if(!S.currentPlan||!S.currentPlan.exercises[ei])return;
+  S.currentPlan.exercises[ei][field]=val;
+  // Update visible dots display
+  if(field==='weight'){document.querySelectorAll('#sw-'+ei).forEach(function(e){e.textContent=val;});}
+  if(field==='reps'){document.querySelectorAll('#sr-'+ei).forEach(function(e){e.textContent=val;});}
+}
+
+function updateExSets(ei,newCount){
+  if(!S.currentPlan||!S.currentPlan.exercises[ei])return;
+  var ex=S.currentPlan.exercises[ei];
+  var oldCount=ex.sets||3;
+  var n=Math.max(1,Math.min(10,parseInt(newCount)||3));
+  ex.sets=n;
+  S.totalSets=S.currentPlan.exercises.reduce(function(a,e){return a+(e.sets||0);},0);
+  updateWoProg();
+  // Re-render just the sets row for this exercise
+  var row=document.getElementById('sd-'+ei+'-0');
+  if(!row)return;
+  var setsRow=row.parentElement;
+  setsRow.innerHTML='';
+  for(var i=0;i<n;i++){
+    var dot=document.createElement('div');
+    dot.className='set-dot';
+    dot.id='sd-'+ei+'-'+i;
+    dot.onclick=(function(eei,ssi,rr){return function(){toggleSet(eei,ssi,rr);};})(ei,i,ex.rest);
+    dot.innerHTML='<div class="set-dot-reps" id="sr-'+ei+'">'+ex.reps+'</div><div style="font-size:10px;color:var(--text3);font-weight:700;margin-top:1px" id="sw-'+ei+'">'+ex.weight+'</div>';
+    setsRow.appendChild(dot);
+  }
+}
+
+function applyToAllSets(ei){
+  // Just visual confirmation — values are already live from updateExField
+  var wEl=document.getElementById('ew-'+ei);
+  var rEl=document.getElementById('er-'+ei);
+  if(wEl)updateExField(ei,'weight',wEl.value);
+  if(rEl)updateExField(ei,'reps',rEl.value);
+  if(tg&&tg.HapticFeedback)tg.HapticFeedback.impactOccurred('light');
 }
 
 function toggleSet(ei,si,restSec){
@@ -1027,23 +1106,31 @@ function toggleTech(ei){var el=document.getElementById('tb-'+ei);if(el)el.classL
 
 // ── REST TIMER ────────────────────────────────────────────────
 var restInterval=null;
+var restEndTime=null;
 function startRest(sec){
   if(restInterval)clearInterval(restInterval);
-  var left=sec;
-  updateRestDisplay(left);
+  restEndTime=Date.now()+sec*1000;
+  updateRestDisplay(sec);
   document.getElementById('rest-timer').classList.add('show');
   restInterval=setInterval(function(){
-    left--;
+    var left=Math.round((restEndTime-Date.now())/1000);
     if(left<=0){stopRest();return;}
     updateRestDisplay(left);
-  },1000);
+  },500);
 }
+// Resume timer after phone woke up
+document.addEventListener('visibilitychange',function(){
+  if(!document.hidden&&restEndTime){
+    var left=Math.round((restEndTime-Date.now())/1000);
+    if(left<=0){stopRest();}else{updateRestDisplay(left);}
+  }
+});
 function updateRestDisplay(sec){
   var m=Math.floor(sec/60);var s=sec%60;
   document.getElementById('rt-time').textContent=m+':'+(s<10?'0':'')+s;
 }
 function stopRest(){
-  clearInterval(restInterval);restInterval=null;
+  clearInterval(restInterval);restInterval=null;restEndTime=null;
   document.getElementById('rest-timer').classList.remove('show');
   if(tg&&tg.HapticFeedback) tg.HapticFeedback.notificationOccurred('success');
 }
@@ -1073,17 +1160,47 @@ function applyRestTime(){
 
 function finishWorkout(){
   if(!S.currentPlan)return;
-  var vol=(S.currentPlan.exercises||[]).reduce(function(a,ex){
-    var w=parseFloat(ex.weight)||0;var r=parseInt(ex.reps)||10;return a+w*r*(ex.sets||3);
-  },0);
+  // Only count done sets
+  var vol=0;
+  (S.currentPlan.exercises||[]).forEach(function(ex,ei){
+    for(var si=0;si<(ex.sets||3);si++){
+      var btn=document.getElementById('sd-'+ei+'-'+si);
+      if(btn&&btn.classList.contains('done')){
+        var w=parseFloat(ex.weight)||0;
+        var r=parseInt(ex.reps)||10;
+        vol+=w*r;
+      }
+    }
+  });
   if(!S.workouts)S.workouts=[];
+  var doneSetsCnt=document.querySelectorAll('.set-dot.done').length;
   S.workouts.unshift({
     name:S.currentPlan.name,date:new Date().toLocaleDateString('ru'),
     rawDate:new Date().toISOString(),volume:vol,
-    totalSets:S.totalSets,exercises:(S.currentPlan.exercises||[]).map(function(e){return e.name;})
+    totalSets:doneSetsCnt,exercises:(S.currentPlan.exercises||[]).map(function(e){return e.name;})
   });
+  S._pendingPlan=S.currentPlan;
   sv();updateHome();renderHistory();renderProgress();
-  if(tg)tg.showAlert('Тренировка завершена!');else alert('Тренировка завершена!');
+  // Show AI feedback modal
+  document.getElementById('wo-feedback-modal').style.display='flex';
+}
+
+function sendWorkoutFeedback(rating){
+  document.getElementById('wo-feedback-modal').style.display='none';
+  var plan=S._pendingPlan;
+  S._pendingPlan=null;
+  if(rating&&plan){
+    // Ask AI to adjust plan based on feedback
+    var ratingText=rating==='easy'?'Тренировка была слишком лёгкой':rating==='hard'?'Тренировка была слишком тяжёлой':'Тренировка была в самый раз';
+    var msg='Я только что завершил тренировку "'+plan.name+'". '+ratingText+'. Как скорректировать следующую тренировку?';
+    S.chatHistory.push({role:'user',content:msg});
+    fetch('/api/claude',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({system:buildSys(),messages:S.chatHistory.slice(-20),max_tokens:600})})
+      .then(function(r){return r.json();})
+      .then(function(data){
+        S.chatHistory.push({role:'assistant',content:data.text});
+        sv();
+      }).catch(function(){});
+  }
   resetWorkout();
 }
 
@@ -1097,6 +1214,7 @@ function resetWorkout(){
   document.getElementById('wo-form').style.display='';
   document.getElementById('wo-result').style.display='none';
   S.currentPlan=null;S.doneCount=0;S.totalSets=0;stopRest();
+  navigateTo('workout');
 }
 
 // ── HISTORY ───────────────────────────────────────────────────
@@ -1468,6 +1586,30 @@ updateEqHint();
     </div>
     <button class="btn btn-p" onclick="applyCalRange()" style="margin-top:16px" id="cal-apply-btn" disabled>Применить</button>
     <button class="btn btn-s" onclick="document.getElementById('cal-modal').style.display='none'">Отмена</button>
+  </div>
+</div>
+
+<!-- MODAL: фидбэк тренировки -->
+<div class="mo" id="wo-feedback-modal" style="display:none">
+  <div class="md">
+    <div class="md-handle"></div>
+    <div class="md-title">Как прошла тренировка? 🏆</div>
+    <p style="font-size:13px;color:var(--text2);font-weight:500;line-height:1.6;margin-bottom:20px">AI настроит следующую тренировку под твой отзыв</p>
+    <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;margin-bottom:16px">
+      <button onclick="sendWorkoutFeedback('easy')" style="background:var(--bg3);border:1.5px solid var(--border2);border-radius:14px;padding:14px 8px;cursor:pointer;font-family:Manrope,sans-serif;text-align:center">
+        <div style="font-size:24px;margin-bottom:6px">😴</div>
+        <div style="font-size:12px;font-weight:700;color:var(--text2)">Легко</div>
+      </button>
+      <button onclick="sendWorkoutFeedback('ok')" style="background:var(--green-dim);border:1.5px solid var(--green);border-radius:14px;padding:14px 8px;cursor:pointer;font-family:Manrope,sans-serif;text-align:center">
+        <div style="font-size:24px;margin-bottom:6px">💪</div>
+        <div style="font-size:12px;font-weight:700;color:var(--green)">В самый раз</div>
+      </button>
+      <button onclick="sendWorkoutFeedback('hard')" style="background:var(--bg3);border:1.5px solid var(--border2);border-radius:14px;padding:14px 8px;cursor:pointer;font-family:Manrope,sans-serif;text-align:center">
+        <div style="font-size:24px;margin-bottom:6px">🔥</div>
+        <div style="font-size:12px;font-weight:700;color:var(--text2)">Тяжело</div>
+      </button>
+    </div>
+    <button class="btn btn-s" onclick="sendWorkoutFeedback(null)">Пропустить ×</button>
   </div>
 </div>
 
