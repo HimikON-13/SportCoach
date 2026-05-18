@@ -56,16 +56,14 @@ body{font-family:'Manrope',-apple-system,sans-serif;color:var(--text);font-size:
 .cam-btn:active{transform:scale(.92)}
 .cam-btn svg{width:22px;height:22px;stroke:#000;fill:none;stroke-width:2.2;stroke-linecap:round;stroke-linejoin:round}
 
-/* ─── HOME ─── */
-.ring-wrap{display:flex;flex-direction:column;align-items:center;padding:20px 0 28px}
-.ring-svg{width:220px;height:220px;transform:rotate(-90deg)}
-.ring-track{fill:none;stroke:var(--bg4);stroke-width:12}
-.ring-fill{fill:none;stroke:var(--green);stroke-width:12;stroke-linecap:round;transition:stroke-dashoffset 1.2s cubic-bezier(.4,0,.2,1)}
-.ring-center{position:absolute;display:flex;flex-direction:column;align-items:center;justify-content:center;inset:0}
-.ring-container{position:relative;width:220px;height:220px}
-.ring-val{font-size:42px;font-weight:900;letter-spacing:-2px;line-height:1}
-.ring-unit{font-size:13px;color:var(--text2);font-weight:600;margin-top:4px;letter-spacing:.5px;text-transform:uppercase}
-.ring-label{font-size:12px;color:var(--text2);font-weight:600;margin-top:16px;letter-spacing:1px;text-transform:uppercase}
+/* ─── HOME HERO ─── */
+.vol-hero{position:relative;width:100%;height:280px;border-radius:22px;overflow:hidden;margin:12px 0 24px}
+.vol-hero-img{position:absolute;inset:0;background-size:cover;background-position:center;transition:background-image .6s ease}
+.vol-hero-overlay{position:absolute;inset:0;background:linear-gradient(to bottom,rgba(0,0,0,.05) 0%,rgba(0,0,0,.72) 100%)}
+.vol-hero-content{position:absolute;inset:0;display:flex;flex-direction:column;align-items:flex-start;justify-content:flex-end;padding:22px}
+.vol-hero-val{font-size:52px;font-weight:900;letter-spacing:-3px;color:#fff;line-height:1;text-shadow:0 2px 16px rgba(0,0,0,.6)}
+.vol-hero-unit{font-size:13px;color:rgba(255,255,255,.65);font-weight:700;letter-spacing:2px;text-transform:uppercase;margin-top:4px}
+.vol-hero-cmp{font-size:15px;color:rgba(255,255,255,.9);font-weight:600;margin-top:10px;text-shadow:0 1px 8px rgba(0,0,0,.5)}
 
 .home-stats{display:flex;justify-content:space-around;width:100%;margin-bottom:28px}
 .hs{text-align:center}
@@ -281,18 +279,15 @@ input[type=file]{display:none}
           <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--text2)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
         </button>
       </div>
-      <div class="ring-wrap">
-        <div class="ring-container">
-          <svg class="ring-svg" viewBox="0 0 220 220">
-            <circle class="ring-track" cx="110" cy="110" r="95"/>
-            <circle class="ring-fill" id="ring-fill" cx="110" cy="110" r="95" stroke-dasharray="597" stroke-dashoffset="597"/>
-          </svg>
-          <div class="ring-center">
-            <div class="ring-val" id="ring-val">0</div>
-            <div class="ring-unit">кг</div>
-          </div>
+      <div class="vol-hero" id="vol-hero">
+        <div class="vol-hero-img" id="vol-hero-img"></div>
+        <div class="vol-hero-overlay"></div>
+        <div class="vol-hero-content">
+          <div style="font-size:10px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:rgba(255,255,255,.5);margin-bottom:4px">Объём</div>
+          <div class="vol-hero-val" id="ring-val">0</div>
+          <div class="vol-hero-unit">кг</div>
+          <div class="vol-hero-cmp" id="vol-hero-cmp"></div>
         </div>
-        <div class="ring-label" id="ring-label">Объём за день</div>
       </div>
       <div class="home-stats">
         <div class="hs"><div class="hs-val" id="hs-wo">0</div><div class="hs-lbl">Тренировок</div></div>
@@ -382,13 +377,6 @@ input[type=file]{display:none}
       </div><!-- end ptab-info-content -->
 
       <!-- Мои залы tab in profile -->
-      <div id="ptab-eq-content" style="display:none">
-        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:14px">
-          <div class="sec-lbl" style="margin:0">Мои залы</div>
-          <button onclick="openNewGymModal()" style="background:var(--green);border:none;color:#000;font-family:'Manrope',sans-serif;font-size:12px;font-weight:700;padding:7px 14px;border-radius:10px;cursor:pointer">+ Новый зал</button>
-        </div>
-        <div id="prof-gyms-list"></div>
-      </div>
     </div>
 
     <!-- AI -->
@@ -410,10 +398,6 @@ input[type=file]{display:none}
     <!-- ПРОФИЛЬ -->
     <div class="page" id="p-profile">
       <!-- Profile tabs -->
-      <div style="display:flex;gap:0;margin-bottom:18px;background:var(--bg3);border-radius:12px;padding:3px">
-        <button id="ptab-info" onclick="switchProfTab('info')" style="flex:1;padding:8px;border:none;border-radius:10px;font-family:'Manrope',sans-serif;font-size:13px;font-weight:700;cursor:pointer;background:var(--bg4);color:var(--text)">Профиль</button>
-        <button id="ptab-eq" onclick="switchProfTab('eq')" style="flex:1;padding:8px;border:none;border-radius:10px;font-family:'Manrope',sans-serif;font-size:13px;font-weight:700;cursor:pointer;background:transparent;color:var(--text2)">Мои залы</button>
-      </div>
       <div id="ptab-info-content">
       <div class="prof-hdr">
         <div class="prof-photo" onclick="document.getElementById('ph-inp').click()">
@@ -448,16 +432,25 @@ input[type=file]{display:none}
       </div>
       <div style="background:var(--bg3);border-radius:18px;padding:18px;border:1px solid var(--border)">
         <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:14px">
-          <div class="sec-lbl" style="margin:0">Замеры тела</div>
+          <div style="display:flex;align-items:center;gap:8px">
+            <div class="sec-lbl" style="margin:0">Замеры тела</div>
+            <button onclick="document.getElementById('measure-guide-modal').style.display='flex'" style="background:var(--bg4);border:1px solid var(--border2);color:var(--text2);font-family:'Manrope',sans-serif;font-size:12px;font-weight:800;width:22px;height:22px;border-radius:50%;cursor:pointer;display:flex;align-items:center;justify-content:center;padding:0;flex-shrink:0">?</button>
+          </div>
           <button onclick="document.getElementById('m-modal').style.display='flex'" style="background:var(--green-dim);border:1px solid rgba(168,255,0,.2);color:var(--green);font-family:'Manrope',sans-serif;font-size:11px;font-weight:700;padding:5px 12px;border-radius:8px;cursor:pointer;letter-spacing:.3px">Обновить</button>
         </div>
         <div class="measure-grid">
           <div class="mi"><div class="mi-val" id="dm-chest">—</div><div class="mi-lbl">Грудь</div></div>
+          <div class="mi"><div class="mi-val" id="dm-underbust">—</div><div class="mi-lbl">Н. бюст</div></div>
+          <div class="mi"><div class="mi-val" id="dm-shoulders">—</div><div class="mi-lbl">Ш. плеч</div></div>
+          <div class="mi"><div class="mi-val" id="dm-leftarm">—</div><div class="mi-lbl">Л. плечо</div></div>
+          <div class="mi"><div class="mi-val" id="dm-rightarm">—</div><div class="mi-lbl">П. плечо</div></div>
           <div class="mi"><div class="mi-val" id="dm-waist">—</div><div class="mi-lbl">Талия</div></div>
-          <div class="mi"><div class="mi-val" id="dm-hips">—</div><div class="mi-lbl">Бёдра</div></div>
-          <div class="mi"><div class="mi-val" id="dm-arm">—</div><div class="mi-lbl">Плечо</div></div>
-          <div class="mi"><div class="mi-val" id="dm-thigh">—</div><div class="mi-lbl">Бедро</div></div>
-          <div class="mi"><div class="mi-val" id="dm-calf">—</div><div class="mi-lbl">Икра</div></div>
+          <div class="mi"><div class="mi-val" id="dm-glutes">—</div><div class="mi-lbl">Ягодицы</div></div>
+          <div class="mi"><div class="mi-val" id="dm-hips">—</div><div class="mi-lbl">Таз</div></div>
+          <div class="mi"><div class="mi-val" id="dm-leftthigh">—</div><div class="mi-lbl">Л. бедро</div></div>
+          <div class="mi"><div class="mi-val" id="dm-rightthigh">—</div><div class="mi-lbl">П. бедро</div></div>
+          <div class="mi"><div class="mi-val" id="dm-leftcalf">—</div><div class="mi-lbl">Л. икра</div></div>
+          <div class="mi"><div class="mi-val" id="dm-rightcalf">—</div><div class="mi-lbl">П. икра</div></div>
         </div>
       </div>
     </div>
@@ -577,11 +570,17 @@ input[type=file]{display:none}
     <div class="md-title">Замеры тела</div>
     <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px">
       <div class="field"><label class="flbl">Грудь (см)</label><input class="inp" type="number" id="mi-chest"></div>
+      <div class="field"><label class="flbl">Нижний бюст (см)</label><input class="inp" type="number" id="mi-underbust"></div>
+      <div class="field"><label class="flbl">Ширина плеч (см)</label><input class="inp" type="number" id="mi-shoulders"></div>
+      <div class="field"><label class="flbl">Левое плечо (см)</label><input class="inp" type="number" id="mi-leftarm"></div>
+      <div class="field"><label class="flbl">Правое плечо (см)</label><input class="inp" type="number" id="mi-rightarm"></div>
       <div class="field"><label class="flbl">Талия (см)</label><input class="inp" type="number" id="mi-waist"></div>
-      <div class="field"><label class="flbl">Бёдра (см)</label><input class="inp" type="number" id="mi-hips"></div>
-      <div class="field"><label class="flbl">Плечо (см)</label><input class="inp" type="number" id="mi-arm"></div>
-      <div class="field"><label class="flbl">Бедро (см)</label><input class="inp" type="number" id="mi-thigh"></div>
-      <div class="field"><label class="flbl">Икра (см)</label><input class="inp" type="number" id="mi-calf"></div>
+      <div class="field"><label class="flbl">Ягодицы (см)</label><input class="inp" type="number" id="mi-glutes"></div>
+      <div class="field"><label class="flbl">Таз (см)</label><input class="inp" type="number" id="mi-hips"></div>
+      <div class="field"><label class="flbl">Левое бедро (см)</label><input class="inp" type="number" id="mi-leftthigh"></div>
+      <div class="field"><label class="flbl">Правое бедро (см)</label><input class="inp" type="number" id="mi-rightthigh"></div>
+      <div class="field"><label class="flbl">Левая икра (см)</label><input class="inp" type="number" id="mi-leftcalf"></div>
+      <div class="field"><label class="flbl">Правая икра (см)</label><input class="inp" type="number" id="mi-rightcalf"></div>
     </div>
     <div class="field"><label class="flbl">Процент жира (%)</label><input class="inp" type="number" id="mi-fat"></div>
     <button class="btn btn-p" style="margin-top:8px" onclick="saveMeasures()">Сохранить</button>
@@ -624,15 +623,30 @@ if (tg) { tg.ready(); tg.expand(); }
 
 var S = {
   profile:{name:'',weight:'',height:'',goal:'Набор массы',level:'Средний',photo:''},
-  measures:{chest:'',waist:'',hips:'',arm:'',thigh:'',calf:'',fat:''},
+  measures:{chest:'',underbust:'',shoulders:'',leftarm:'',rightarm:'',waist:'',glutes:'',hips:'',leftthigh:'',rightthigh:'',leftcalf:'',rightcalf:'',fat:''},
   equipment:[],gyms:[],activeGymId:null,workouts:[],chatHistory:[],meals:[],
   selMuscles:[],eqMuscles:[],scanMuscles:[],
   selectedWType:'',currentPlan:null,scanPhoto:null,
   doneCount:0,totalSets:0
 };
 
-function sv(){try{localStorage.setItem('gymai5',JSON.stringify(S));}catch(e){}}
-function ld(){try{var d=localStorage.getItem('gymai5');if(d){var p=JSON.parse(d);for(var k in p)S[k]=p[k];}}catch(e){}}
+function sv(){
+  try{localStorage.setItem('gymai5',JSON.stringify(S));}catch(e){
+    try{
+      var slim=JSON.parse(JSON.stringify(S));
+      (slim.equipment||[]).forEach(function(eq){eq.photo=null;});
+      (slim.gyms||[]).forEach(function(g){(g.equipment||[]).forEach(function(eq){eq.photo=null;});});
+      if(slim.profile)slim.profile.photo=null;
+      localStorage.setItem('gymai5',JSON.stringify(slim));
+    }catch(e2){}
+  }
+}
+function ld(){
+  try{var d=localStorage.getItem('gymai5');if(d){var p=JSON.parse(d);for(var k in p)S[k]=p[k];}}catch(e){}
+  if(!S.workouts||S.workouts.length===0){
+    S.workouts=[{name:'Пример',date:new Date().toLocaleDateString('ru'),rawDate:new Date().toISOString(),volume:4200,totalSets:9,exercises:['Жим лёжа','Тяга верхнего блока','Жим гантелей сидя'],exerciseWeights:[80,60,24]}];
+  }
+}
 ld();
 
 // Today's meals only
@@ -687,14 +701,23 @@ function init(){
 }
 
 function goPage(name){
-  // If leaving an active workout, prompt user
   if(name!=='workout'&&S.currentPlan){
-    if(!confirm('Тренировка ещё идёт. Сохранить прогресс и выйти?')){
-      return;
-    }
-    // Save as incomplete workout
-    finishWorkout();
-    return;
+    if(confirm('Тренировка в процессе. Хочешь продолжить тренировку?'))return;
+    // Сохраняем без модала фидбека
+    var vol=0;
+    (S.currentPlan.exercises||[]).forEach(function(ex,ei){
+      for(var si=0;si<(ex.sets||3);si++){
+        var btn=document.getElementById('sd-'+ei+'-'+si);
+        if(btn&&btn.classList.contains('done')){
+          var w=ex.setWeights&&ex.setWeights[si]!=null?parseFloat(ex.setWeights[si]):parseFloat(ex.weight)||0;
+          vol+=w*(ex.setReps&&ex.setReps[si]?parseInt(ex.setReps[si]):parseInt(ex.reps)||10);
+        }
+      }
+    });
+    if(!S.workouts)S.workouts=[];
+    S.workouts.unshift({name:S.currentPlan.name,date:new Date().toLocaleDateString('ru'),rawDate:new Date().toISOString(),volume:vol,totalSets:document.querySelectorAll('.set-dot.done').length,exercises:(S.currentPlan.exercises||[]).map(function(e){return e.name;})});
+    S.currentPlan=null;S.doneCount=0;S.totalSets=0;stopRest();
+    sv();updateHome();renderHistory();renderProgress();
   }
   document.querySelectorAll('.page').forEach(function(p){p.classList.remove('active');});
   document.querySelectorAll('.nb').forEach(function(b){b.classList.remove('on');});
@@ -720,18 +743,46 @@ function navigateTo(name){
 }
 
 // ── WEEK VOLUME RING ──────────────────────────────────────────
+var _CDN='https://d8j0ntlcm91z4.cloudfront.net/user_38pU7PhUdWEygkNV29UOGZkDtZg/';
+var VOL_TIERS=[
+  {max:500,      name:'щенок',           img:_CDN+'hf_20260518_163034_b3d91c9a-5962-4f0c-b519-997024be0ef3_min.webp'},
+  {max:1000,     name:'морж',            img:_CDN+'hf_20260518_163037_18804b29-67e0-4a40-b5ad-62e7835cfb5c_min.webp'},
+  {max:2000,     name:'носорог',         img:_CDN+'hf_20260518_163040_21944cbc-baef-465c-8431-37780d7b308e_min.webp'},
+  {max:3000,     name:'джип',            img:_CDN+'hf_20260518_163043_cf65b26b-1d3b-47de-85cc-8cc45112a4f5_min.webp'},
+  {max:5000,     name:'трактор',         img:_CDN+'hf_20260518_163047_92e3427b-0525-4fd7-86bf-804acbfd9b49_min.webp'},
+  {max:7000,     name:'вертолёт',        img:_CDN+'hf_20260518_163050_f38bda71-bd55-4d46-9a9e-097eb625ecf3_min.webp'},
+  {max:9000,     name:'грузовик',        img:_CDN+'hf_20260518_163053_964be2aa-974c-4575-80d6-04554a18cb20_min.webp'},
+  {max:10000,    name:'яхта',            img:_CDN+'hf_20260518_163056_9394c51a-2253-488b-94b7-af6337672728_min.webp'},
+  {max:15000,    name:'пожарная машина', img:_CDN+'hf_20260518_163059_7abc74e5-37ad-4619-941e-8344b58e3373_min.webp'},
+  {max:17000,    name:'БМП-3',           img:_CDN+'hf_20260518_163102_aa5a12de-20cb-473f-b2c4-e9494306aae1_min.webp'},
+  {max:19000,    name:'вагон поезда',    img:_CDN+'hf_20260518_163106_18da31ea-3d0e-4018-82d3-1a8838e594c6_min.webp'},
+  {max:22000,    name:'самолёт ATR-72',  img:_CDN+'hf_20260518_163109_72fd1231-97ef-4513-9af6-9ea0f0a9b4cb_min.webp'},
+  {max:25000,    name:'экскаватор',      img:_CDN+'hf_20260518_163112_5b1158a1-4768-47f6-99ef-28783234d669_min.webp'},
+  {max:28000,    name:'речной паром',    img:_CDN+'hf_20260518_163116_6cc5d25d-d56e-479e-930d-2186a226df68_min.webp'},
+  {max:Infinity, name:'подъёмный кран',  img:_CDN+'hf_20260518_163119_dbddc1d2-0f8d-4e48-9bb4-7fa48ff60e1b_min.webp'}
+];
+
+function ruPlural(n,f){var a=Math.abs(Math.round(n));if(a%10===1&&a%100!==11)return f[0];if(a%10>=2&&a%10<=4&&(a%100<10||a%100>=20))return f[1];return f[2];}
+
+function getVolTier(kg){for(var i=0;i<VOL_TIERS.length;i++){if(kg<=VOL_TIERS[i].max)return VOL_TIERS[i];}return VOL_TIERS[VOL_TIERS.length-1];}
+
 function updateHome(){
   var wo=S.workouts||[];
   var filtered=typeof filterWoByPeriod==='function'?filterWoByPeriod(wo):wo;
   var vol=filtered.reduce(function(a,w){return a+(w.volume||0);},0);
   var kg=Math.round(vol);
-  document.getElementById('ring-val').textContent=kg;
-  // Ring animation (max = 10000 kg target)
-  var pct=Math.min(vol/10000,1);
-  var circ=2*Math.PI*95;
-  var offset=circ*(1-pct);
-  document.getElementById('ring-fill').style.strokeDasharray=circ;
-  document.getElementById('ring-fill').style.strokeDashoffset=offset;
+  document.getElementById('ring-val').textContent=kg.toLocaleString('ru');
+
+  var heroImg=document.getElementById('vol-hero-img');
+  var heroCmp=document.getElementById('vol-hero-cmp');
+  if(kg>0){
+    var tier=getVolTier(kg);
+    heroImg.style.backgroundImage='url('+tier.img+')';
+    heroCmp.textContent='это больше чем '+tier.name;
+  } else {
+    heroImg.style.backgroundImage='none';
+    heroCmp.textContent='начни первую тренировку';
+  }
 
   var totalSets=wo.reduce(function(a,w){return a+(w.totalSets||0);},0);
   var totalEq=(S.equipment||[]).length;
@@ -740,7 +791,6 @@ function updateHome(){
   document.getElementById('hs-sets').textContent=totalSets;
   document.getElementById('hs-eq').textContent=totalEq;
 
-  // Activity feed
   var el=document.getElementById('activity-feed');
   if(wo.length===0){el.innerHTML='<div style="color:var(--text2);font-size:13px;font-weight:500;padding:20px 0">Тренировок пока нет. Начни первую!</div>';return;}
   el.innerHTML=wo.slice(0,5).map(function(w){
@@ -923,12 +973,25 @@ function renderEq(){
   });
 }
 
+function compressImage(dataUrl,maxW,maxH,cb){
+  var img=new Image();
+  img.onload=function(){
+    var w=img.width,h=img.height;
+    if(w>maxW){h=Math.round(h*maxW/w);w=maxW;}
+    if(h>maxH){w=Math.round(w*maxH/h);h=maxH;}
+    var c=document.createElement('canvas');c.width=w;c.height=h;
+    c.getContext('2d').drawImage(img,0,0,w,h);
+    cb(c.toDataURL('image/jpeg',0.65));
+  };
+  img.src=dataUrl;
+}
+
 async function scanEquip(input){
   if(!input.files||!input.files[0])return;
   var file=input.files[0];
   var reader=new FileReader();
   reader.onload=async function(e){
-    S.scanPhoto=e.target.result;
+    compressImage(e.target.result,600,450,function(compressed){S.scanPhoto=compressed;});
     var b64=e.target.result.split(',')[1];
     document.getElementById('cm-upload').style.display='none';
     document.getElementById('cm-scanning').style.display='';
@@ -994,21 +1057,21 @@ function delEq(i){
 // ── WORKOUT GENERATION ────────────────────────────────────────
 var updateEqHint=function(){
   var eq=getEqForWorkout?getEqForWorkout():(S.equipment||[]);var h=document.getElementById('eq-hint');if(!h)return;
-  if(eq.length===0)h.textContent='Добавь тренажёры в зал или выбери зал выше';
+  if(eq.length===0)h.textContent='Нет тренажёров — сгенерируется тренировка с собственным весом';
   else h.textContent=eq.slice(0,3).map(function(e){return e.name;}).join(', ')+(eq.length>3?' +' +(eq.length-3):'');
 };
 
 async function generateWorkout(){
   var eq=getEqForWorkout();
-  if(eq.length===0){alert('Сначала добавь тренажёры в зал!');return;}
+  if(eq.length===0){eq=[{name:'Собственный вес',muscles:['Грудь','Спина','Плечи','Бицепс','Трицепс','Квадрицепс','Пресс','Ягодицы']}];}
   if(!S.selectedWType){alert('Выбери тип тренировки!');return;}
-  var actualWType=S.selectedWType==='Своё'?(document.getElementById('custom-wtype-inp').value.trim()||'Своя тренировка'):S.selectedWType;
   var btn=document.getElementById('gen-btn');btn.disabled=true;btn.textContent='Генерирую...';
   var p=S.profile||{};var m=S.measures||{};var focus=S.selMuscles||[];
   var eqLines=eq.map(function(e){return '- '+e.name+' ('+(e.muscles||[]).join(', ')+')';}).join('\n');
+  var noEq=eqLines==='- Собственный вес (Грудь, Спина, Плечи, Бицепс, Трицепс, Квадрицепс, Пресс, Ягодицы)';
   var mStr=(m.chest||m.waist)?'\nЗамеры: грудь '+(m.chest||'?')+', талия '+(m.waist||'?')+' см'+(m.fat?', жир '+m.fat+'%':''):'';
   var fStr=focus.length>0?' Акцент: '+focus.join(', ')+'.':'';
-  var prompt='Составь тренировку используя ТОЛЬКО это оборудование (не обязательно всё, выбери подходящее):\n'+eqLines+'\n\nПрофиль: цель - '+(p.goal||'Набор массы')+', уровень - '+(p.level||'Средний')+(p.weight?', вес - '+p.weight+' кг':'')+(p.height?', рост - '+p.height+' см':'')+'.'+mStr+'\nТип: '+S.selectedWType+'.'+fStr+'\n\nОтветь ТОЛЬКО JSON без markdown и звёздочек:\n{"name":"Название","duration":"~60 мин","exercises":[{"name":"Упражнение","equipment":"Тренажёр","sets":3,"reps":"8-10","weight":"70 кг","rest":90,"technique":"Техника выполнения, 2-3 предложения"}],"notes":"Короткие рекомендации"}';
+  var prompt='Составь тренировку используя ТОЛЬКО это оборудование (не обязательно всё, выбери подходящее):\n'+eqLines+'\n\nПрофиль: цель - '+(p.goal||'Набор массы')+', уровень - '+(p.level||'Средний')+(p.weight?', вес - '+p.weight+' кг':'')+(p.height?', рост - '+p.height+' см':'')+'.'+mStr+'\nТип: '+S.selectedWType+'.'+fStr+'\n'+(noEq?'Оборудования нет — составь тренировку из 3 упражнений с собственным весом (отжимания, приседания, планка и подобные). Вес указывай "0".\n':'')+'ВСЕ названия упражнений и поля ТОЛЬКО на русском языке.\nОтветь ТОЛЬКО JSON без markdown и звёздочек:\n{"name":"Название","duration":"~60 мин","exercises":[{"name":"Упражнение","equipment":"Тренажёр","sets":3,"reps":"8-10","weight":"70 кг","rest":90,"technique":"Техника выполнения, 2-3 предложения"}],"notes":"Короткие рекомендации"}';
   try{
     var res=await fetch('/api/claude',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({messages:[{role:'user',content:prompt}],max_tokens:1500})});
     var data=await res.json();
@@ -1018,82 +1081,124 @@ async function generateWorkout(){
   btn.disabled=false;btn.textContent='Сгенерировать';
 }
 
+var _selSet={};
+
 function renderActivePlan(plan){
   document.getElementById('wo-form').style.display='none';
   document.getElementById('wo-result').style.display='';
   document.getElementById('wo-title').textContent=plan.name;
   document.getElementById('wo-meta').textContent=plan.duration;
   S.totalSets=(plan.exercises||[]).reduce(function(a,e){return a+(e.sets||0);},0);
-  S.doneCount=0;updateWoProg();
+  S.doneCount=0;_selSet={};updateWoProg();
   var el=document.getElementById('wo-exercises');el.innerHTML='';
   (plan.exercises||[]).forEach(function(ex,ei){
-    var sets='';
-    for(var i=0;i<(ex.sets||3);i++){
-      sets+='<div class="set-dot" id="sd-'+ei+'-'+i+'" onclick="toggleSet('+ei+','+i+','+ex.rest+')"><div class="set-dot-reps" id="sr-'+ei+'">'+ex.reps+'</div><div style="font-size:10px;color:var(--text3);font-weight:700;margin-top:1px" id="sw-'+ei+'">'+ex.weight+'</div></div>';
-    }
+    if(!ex.setWeights){ex.setWeights=[];for(var i=0;i<(ex.sets||3);i++)ex.setWeights.push(parseFloat(ex.weight)||0);}
+    if(!ex.setReps){ex.setReps=[];for(var i=0;i<(ex.sets||3);i++)ex.setReps.push(ex.reps||'10');}
     var item=document.createElement('div');item.className='ex-item';
     item.innerHTML='<div class="ex-top-row"><div class="ex-name">'+ex.name+'</div></div>'
       +'<div class="ex-eq-tag">'+ex.equipment+' · отдых '+(ex.rest||90)+'с</div>'
-      +'<div class="ex-sets-row">'+sets+'</div>'
-      +'<div style="display:flex;gap:8px;margin-top:8px;align-items:center">'
-      +'<div style="flex:1"><div class="flbl" style="margin-bottom:4px">Вес (кг)</div><input class="inp" type="number" id="ew-'+ei+'" value="'+parseFloat(ex.weight||0)+'" oninput="updateExField('+ei+',\'weight\',this.value)" style="padding:8px 10px;font-size:13px"></div>'
-      +'<div style="flex:1"><div class="flbl" style="margin-bottom:4px">Повторения</div><input class="inp" type="text" id="er-'+ei+'" value="'+ex.reps+'" oninput="updateExField('+ei+',\'reps\',this.value)" style="padding:8px 10px;font-size:13px"></div>'
-      +'<div style="flex:0 0 56px"><div class="flbl" style="margin-bottom:4px">Подходы</div><input class="inp" type="number" id="es-'+ei+'" value="'+(ex.sets||3)+'" min="1" max="10" oninput="updateExSets('+ei+',this.value)" style="padding:8px 10px;font-size:13px"></div>'
+      +'<div style="display:flex;flex-wrap:wrap;align-items:center;gap:6px;margin-top:10px">'
+      +'<div class="ex-sets-row" id="sets-row-'+ei+'" style="flex-wrap:wrap;display:contents"></div>'
+      +'<button style="background:var(--bg3);border:1.5px dashed var(--border2);color:var(--text2);font-family:Manrope,sans-serif;font-size:20px;font-weight:700;padding:0;border-radius:10px;cursor:pointer;width:44px;height:44px;display:flex;align-items:center;justify-content:center;flex-shrink:0" onclick="addSet('+ei+')">+</button>'
       +'</div>'
-      +'<button style="background:var(--bg3);border:1px solid var(--border2);color:var(--text2);font-family:Manrope,sans-serif;font-size:11px;font-weight:700;padding:6px 12px;border-radius:8px;cursor:pointer;margin-top:6px" onclick="applyToAllSets('+ei+')" title="Применить вес и повторения ко всем подходам">Применить ко всем подходам</button>'
-      +(ex.technique?'<button class="tech-toggle" onclick="toggleTech('+ei+')" style="margin-top:6px;display:block">Показать технику</button><div class="tech-body" id="tb-'+ei+'">'+ex.technique+'</div>':'');
+      +'<button onclick="toggleExCard('+ei+')" style="display:flex;align-items:center;gap:6px;background:none;border:none;color:var(--text2);font-family:Manrope,sans-serif;font-size:11px;font-weight:700;padding:8px 0 2px;cursor:pointer;letter-spacing:.5px;text-transform:uppercase">'
+      +'<div id="ex-arr-'+ei+'" style="font-size:14px;transition:transform .2s;line-height:1">›</div>'
+      +'<span>Вес и повторения</span>'
+      +'</button>'
+      +'<div id="ex-body-'+ei+'" style="display:none">'
+      +'<div style="display:flex;gap:8px;align-items:center">'
+      +'<div style="flex:1"><div class="flbl" style="margin-bottom:4px">Вес (кг)</div><input class="inp" type="number" id="ew-'+ei+'" placeholder="—" oninput="updateExField('+ei+',\'weight\',this.value)" style="padding:8px 10px;font-size:13px"></div>'
+      +'<div style="flex:1"><div class="flbl" style="margin-bottom:4px">Повторения</div><input class="inp" type="text" id="er-'+ei+'" placeholder="—" oninput="updateExField('+ei+',\'reps\',this.value)" style="padding:8px 10px;font-size:13px"></div>'
+      +'</div>'
+      +'<div style="display:flex;gap:8px;margin-top:6px">'
+      +'<button style="flex:1;background:var(--green);color:#000;font-family:Manrope,sans-serif;font-size:12px;font-weight:800;padding:8px 12px;border-radius:10px;border:none;cursor:pointer" onclick="applyToSet('+ei+')">Применить</button>'
+      +'<button style="flex:1;background:var(--bg3);border:1px solid var(--border2);color:var(--text2);font-family:Manrope,sans-serif;font-size:11px;font-weight:700;padding:8px 12px;border-radius:10px;cursor:pointer" onclick="applyToAllSets('+ei+')">Ко всем</button>'
+      +'</div>'
+      +(ex.technique?'<button class="tech-toggle" onclick="toggleTech('+ei+')" style="margin-top:6px;display:block">Показать технику</button><div class="tech-body" id="tb-'+ei+'">'+ex.technique+'</div>':'')
+      +'</div>';
     el.appendChild(item);
+    renderSetDots(ei,ex);
   });
 }
 
-function updateExField(ei,field,val){
-  if(!S.currentPlan||!S.currentPlan.exercises[ei])return;
-  S.currentPlan.exercises[ei][field]=val;
-  // Update visible dots display
-  if(field==='weight'){document.querySelectorAll('#sw-'+ei).forEach(function(e){e.textContent=val;});}
-  if(field==='reps'){document.querySelectorAll('#sr-'+ei).forEach(function(e){e.textContent=val;});}
-}
-
-function updateExSets(ei,newCount){
-  if(!S.currentPlan||!S.currentPlan.exercises[ei])return;
-  var ex=S.currentPlan.exercises[ei];
-  var oldCount=ex.sets||3;
-  var n=Math.max(1,Math.min(10,parseInt(newCount)||3));
-  ex.sets=n;
-  S.totalSets=S.currentPlan.exercises.reduce(function(a,e){return a+(e.sets||0);},0);
-  updateWoProg();
-  // Re-render just the sets row for this exercise
-  var row=document.getElementById('sd-'+ei+'-0');
-  if(!row)return;
-  var setsRow=row.parentElement;
-  setsRow.innerHTML='';
-  for(var i=0;i<n;i++){
-    var dot=document.createElement('div');
-    dot.className='set-dot';
-    dot.id='sd-'+ei+'-'+i;
-    dot.onclick=(function(eei,ssi,rr){return function(){toggleSet(eei,ssi,rr);};})(ei,i,ex.rest);
-    dot.innerHTML='<div class="set-dot-reps" id="sr-'+ei+'">'+ex.reps+'</div><div style="font-size:10px;color:var(--text3);font-weight:700;margin-top:1px" id="sw-'+ei+'">'+ex.weight+'</div>';
-    setsRow.appendChild(dot);
+function renderSetDots(ei,ex){
+  var row=document.getElementById('sets-row-'+ei);if(!row)return;
+  row.innerHTML='';
+  for(var i=0;i<ex.sets;i++){
+    (function(si){
+      var dot=document.createElement('div');
+      dot.className='set-dot';dot.id='sd-'+ei+'-'+si;
+      if(_selSet[ei]===si)dot.style.outline='2px solid rgba(168,255,0,0.5)';
+      dot.onclick=function(){selectAndToggle(ei,si,ex.rest);};
+      dot.innerHTML='<div class="set-dot-reps" id="sr-'+ei+'-'+si+'">'+ex.setReps[si]+'</div>'
+        +'<div style="font-size:10px;color:var(--text3);font-weight:700;margin-top:1px" id="sw-'+ei+'-'+si+'">'+ex.setWeights[si]+'</div>';
+      row.appendChild(dot);
+    })(i);
   }
 }
 
-function applyToAllSets(ei){
-  // Just visual confirmation — values are already live from updateExField
-  var wEl=document.getElementById('ew-'+ei);
-  var rEl=document.getElementById('er-'+ei);
-  if(wEl)updateExField(ei,'weight',wEl.value);
-  if(rEl)updateExField(ei,'reps',rEl.value);
-  if(tg&&tg.HapticFeedback)tg.HapticFeedback.impactOccurred('light');
-}
-
-function toggleSet(ei,si,restSec){
+function selectAndToggle(ei,si,restSec){
   var btn=document.getElementById('sd-'+ei+'-'+si);if(!btn)return;
   var wasDone=btn.classList.contains('done');
   btn.classList.toggle('done');
   S.doneCount+=wasDone?-1:1;
   updateWoProg();
-  if(!wasDone) startRest(defaultRestSec||restSec||90);
-  if(tg&&tg.HapticFeedback) tg.HapticFeedback.impactOccurred('light');
+  if(!wasDone)startRest(defaultRestSec||restSec||90);
+  if(tg&&tg.HapticFeedback)tg.HapticFeedback.impactOccurred('light');
+  var ex=S.currentPlan&&S.currentPlan.exercises[ei];if(!ex)return;
+  _selSet[ei]=si;
+  for(var i=0;i<ex.sets;i++){var d=document.getElementById('sd-'+ei+'-'+i);if(d)d.style.outline=i===si?'2px solid rgba(168,255,0,0.5)':'';}
+  var wEl=document.getElementById('ew-'+ei);var rEl=document.getElementById('er-'+ei);
+  if(wEl)wEl.value=ex.setWeights[si]||'';
+  if(rEl)rEl.value=ex.setReps[si]||'';
+}
+
+function updateExField(ei,field,val){
+  if(!S.currentPlan||!S.currentPlan.exercises[ei])return;
+  var ex=S.currentPlan.exercises[ei];
+  var si=_selSet[ei]!=null?_selSet[ei]:null;
+  if(si!==null){
+    if(field==='weight'){ex.setWeights[si]=val;var d=document.getElementById('sw-'+ei+'-'+si);if(d)d.textContent=val;}
+    if(field==='reps'){ex.setReps[si]=val;var d=document.getElementById('sr-'+ei+'-'+si);if(d)d.textContent=val;}
+  }
+  ex[field]=val;
+}
+
+function applyToSet(ei){
+  var ex=S.currentPlan&&S.currentPlan.exercises[ei];if(!ex)return;
+  var si=_selSet[ei]!=null?_selSet[ei]:null;if(si===null)return;
+  var w=document.getElementById('ew-'+ei);var r=document.getElementById('er-'+ei);
+  var wv=w?w.value:'';var rv=r?r.value:'';
+  ex.setWeights[si]=wv;ex.setReps[si]=rv;
+  var wd=document.getElementById('sw-'+ei+'-'+si);var rd=document.getElementById('sr-'+ei+'-'+si);
+  if(wd)wd.textContent=wv;if(rd)rd.textContent=rv;
+  if(tg&&tg.HapticFeedback)tg.HapticFeedback.impactOccurred('light');
+}
+
+function applyToAllSets(ei){
+  var ex=S.currentPlan&&S.currentPlan.exercises[ei];if(!ex)return;
+  var w=document.getElementById('ew-'+ei);var r=document.getElementById('er-'+ei);
+  var wv=w?w.value:ex.weight;var rv=r?r.value:ex.reps;
+  for(var i=0;i<ex.sets;i++){
+    ex.setWeights[i]=wv;ex.setReps[i]=rv;
+    var wd=document.getElementById('sw-'+ei+'-'+i);var rd=document.getElementById('sr-'+ei+'-'+i);
+    if(wd)wd.textContent=wv;if(rd)rd.textContent=rv;
+  }
+  if(tg&&tg.HapticFeedback)tg.HapticFeedback.impactOccurred('light');
+}
+
+function addSet(ei){
+  var ex=S.currentPlan&&S.currentPlan.exercises[ei];if(!ex)return;
+  var si=ex.sets;ex.sets++;
+  ex.setWeights.push(ex.setWeights[si-1]!=null?ex.setWeights[si-1]:parseFloat(ex.weight)||0);
+  ex.setReps.push(ex.setReps[si-1]||ex.reps||'10');
+  S.totalSets++;updateWoProg();
+  var row=document.getElementById('sets-row-'+ei);if(!row)return;
+  var dot=document.createElement('div');dot.className='set-dot';dot.id='sd-'+ei+'-'+si;
+  dot.onclick=(function(ssi){return function(){selectAndToggle(ei,ssi,ex.rest);};})(si);
+  dot.innerHTML='<div class="set-dot-reps" id="sr-'+ei+'-'+si+'">'+ex.setReps[si]+'</div>'
+    +'<div style="font-size:10px;color:var(--text3);font-weight:700;margin-top:1px" id="sw-'+ei+'-'+si+'">'+ex.setWeights[si]+'</div>';
+  row.appendChild(dot);
 }
 
 function updateWoProg(){
@@ -1103,6 +1208,15 @@ function updateWoProg(){
 }
 
 function toggleTech(ei){var el=document.getElementById('tb-'+ei);if(el)el.classList.toggle('open');}
+
+function toggleExCard(ei){
+  var body=document.getElementById('ex-body-'+ei);
+  var arr=document.getElementById('ex-arr-'+ei);
+  if(!body)return;
+  var open=body.style.display!=='none';
+  body.style.display=open?'none':'';
+  if(arr)arr.style.transform=open?'rotate(0deg)':'rotate(90deg)';
+}
 
 // ── REST TIMER ────────────────────────────────────────────────
 var restInterval=null;
@@ -1118,11 +1232,14 @@ function startRest(sec){
     updateRestDisplay(left);
   },500);
 }
-// Resume timer after phone woke up
 document.addEventListener('visibilitychange',function(){
   if(!document.hidden&&restEndTime){
     var left=Math.round((restEndTime-Date.now())/1000);
-    if(left<=0){stopRest();}else{updateRestDisplay(left);}
+    if(left<=0){stopRest();}else{
+      updateRestDisplay(left);
+      if(restInterval)clearInterval(restInterval);
+      restInterval=setInterval(function(){var rem=Math.round((restEndTime-Date.now())/1000);if(rem<=0){stopRest();return;}updateRestDisplay(rem);},500);
+    }
   }
 });
 function updateRestDisplay(sec){
@@ -1160,24 +1277,25 @@ function applyRestTime(){
 
 function finishWorkout(){
   if(!S.currentPlan)return;
-  // Only count done sets
   var vol=0;
   (S.currentPlan.exercises||[]).forEach(function(ex,ei){
     for(var si=0;si<(ex.sets||3);si++){
       var btn=document.getElementById('sd-'+ei+'-'+si);
       if(btn&&btn.classList.contains('done')){
-        var w=parseFloat(ex.weight)||0;
-        var r=parseInt(ex.reps)||10;
+        var w=ex.setWeights&&ex.setWeights[si]!=null?parseFloat(ex.setWeights[si]):parseFloat(ex.weight)||0;
+        var r=ex.setReps&&ex.setReps[si]?parseInt(ex.setReps[si]):parseInt(ex.reps)||10;
         vol+=w*r;
       }
     }
   });
   if(!S.workouts)S.workouts=[];
   var doneSetsCnt=document.querySelectorAll('.set-dot.done').length;
+  var exWeights=(S.currentPlan.exercises||[]).map(function(ex){return ex.setWeights?Math.max.apply(null,ex.setWeights.map(function(w){return parseFloat(w)||0;})):parseFloat(ex.weight)||0;});
   S.workouts.unshift({
     name:S.currentPlan.name,date:new Date().toLocaleDateString('ru'),
     rawDate:new Date().toISOString(),volume:vol,
-    totalSets:doneSetsCnt,exercises:(S.currentPlan.exercises||[]).map(function(e){return e.name;})
+    totalSets:doneSetsCnt,exercises:(S.currentPlan.exercises||[]).map(function(e){return e.name;}),
+    exerciseWeights:exWeights
   });
   S._pendingPlan=S.currentPlan;
   sv();updateHome();renderHistory();renderProgress();
@@ -1218,13 +1336,222 @@ function resetWorkout(){
 }
 
 // ── HISTORY ───────────────────────────────────────────────────
+var _editingWoIdx=null;
+var _editingExIdx=null;
+
+function _wodEnsureSets(w,i){
+  if(!w.exerciseSets)w.exerciseSets=[];
+  if(!w.exerciseSets[i]||!w.exerciseSets[i].length){
+    var defW=w.exerciseWeights&&w.exerciseWeights[i]!=null?w.exerciseWeights[i]:0;
+    w.exerciseSets[i]=[{weight:defW,reps:'10'},{weight:defW,reps:'10'},{weight:defW,reps:'10'}];
+  }
+  return w.exerciseSets[i];
+}
+
+function _dateToInput(d){var p=d.split('.');return p.length===3?p[2]+'-'+p[1]+'-'+p[0]:'';}
+function _inputToDate(d){var p=d.split('-');return p.length===3?p[2]+'.'+p[1]+'.'+p[0]:d;}
+
+function _attachSwipe(wrap,ei){
+  var inner=wrap.querySelector('.wod-ex-inner');
+  var delBtn=wrap.querySelector('.wod-ex-del-btn');
+  var startX,startY,dist=0,tracking=false;
+  var THRESH=70;
+  wrap.addEventListener('touchstart',function(e){
+    startX=e.touches[0].clientX;startY=e.touches[0].clientY;dist=0;tracking=false;
+    inner.style.transition='none';
+  },{passive:true});
+  wrap.addEventListener('touchmove',function(e){
+    var dx=e.touches[0].clientX-startX;
+    var dy=e.touches[0].clientY-startY;
+    if(!tracking){if(Math.abs(dy)>Math.abs(dx))return;tracking=true;}
+    dist=Math.min(0,dx);
+    inner.style.transform='translateX('+dist+'px)';
+    delBtn.style.opacity=Math.min(1,Math.max(0,-dist/THRESH)).toString();
+  },{passive:true});
+  wrap.addEventListener('touchend',function(){
+    inner.style.transition='transform 0.2s ease';
+    if(dist<-THRESH){
+      inner.style.transform='translateX(-100%)';
+      setTimeout(function(){wodDeleteExercise(ei);},200);
+    } else {
+      inner.style.transform='';
+      delBtn.style.opacity='0';
+    }
+  });
+}
+
+function wodDeleteExercise(ei){
+  if(_editingWoIdx===null)return;
+  var w=S.workouts[_editingWoIdx];
+  if(!w.exercises||w.exercises.length<=1)return;
+  w.exercises.splice(ei,1);
+  if(w.exerciseSets)w.exerciseSets.splice(ei,1);
+  if(w.exerciseWeights)w.exerciseWeights.splice(ei,1);
+  _recalcWoVolume(w);sv();
+  openWorkoutDetail(_editingWoIdx);
+}
+
+function wodShowAddEx(){
+  var row=document.getElementById('wod-add-ex-row');
+  if(!row)return;
+  row.style.display='flex';
+  var inp=document.getElementById('wod-add-ex-input');
+  if(inp){inp.value='';inp.focus();}
+}
+
+function wodConfirmAddEx(){
+  if(_editingWoIdx===null)return;
+  var inp=document.getElementById('wod-add-ex-input');
+  if(!inp)return;
+  var name=inp.value.trim();
+  if(!name)return;
+  var w=S.workouts[_editingWoIdx];
+  if(!w.exercises)w.exercises=[];
+  w.exercises.push(name);
+  _wodEnsureSets(w,w.exercises.length-1);
+  _recalcWoVolume(w);sv();
+  openWorkoutDetail(_editingWoIdx);
+}
+
+function openWorkoutDetail(wi){
+  _editingWoIdx=wi;
+  var w=S.workouts[wi];
+  (w.exercises||[]).forEach(function(name,i){_wodEnsureSets(w,i);});
+  _recalcWoVolume(w);
+  document.getElementById('wod-name').value=w.name;
+  document.getElementById('wod-date-input').value=_dateToInput(w.date);
+  document.getElementById('wod-stats').textContent=Math.round(w.volume||0)+' кг · '+(w.totalSets||0)+' подходов';
+  var el=document.getElementById('wod-exercises');
+  el.innerHTML='';
+  (w.exercises||[]).forEach(function(name,i){
+    var sets=w.exerciseSets[i];
+    var wrap=document.createElement('div');
+    wrap.style.cssText='position:relative;overflow:hidden';
+    wrap.innerHTML='<div class="wod-ex-del-btn" style="position:absolute;right:0;top:0;bottom:0;width:72px;background:#FF3B30;display:flex;align-items:center;justify-content:center;opacity:0;pointer-events:none">'
+      +'<span style="color:#fff;font-size:12px;font-weight:800">Удалить</span></div>'
+      +'<div class="wod-ex-inner" style="display:flex;align-items:center;gap:10px;padding:12px 0;border-bottom:1px solid var(--border)">'
+      +'<div style="flex:1"><div style="font-size:14px;font-weight:700">'+name+'</div>'
+      +'<div style="font-size:11px;color:var(--text2);font-weight:600;margin-top:2px">'+sets.length+' подх.</div></div>'
+      +'<button onclick="openExEdit('+i+')" style="background:var(--bg3);border:1px solid var(--border2);color:var(--text);font-family:Manrope,sans-serif;font-size:12px;font-weight:700;padding:7px 14px;border-radius:10px;cursor:pointer">Изменить</button>'
+      +'</div>';
+    _attachSwipe(wrap,i);
+    el.appendChild(wrap);
+  });
+  var addRow=document.getElementById('wod-add-ex-row');
+  if(addRow)addRow.style.display='none';
+  document.getElementById('wod-list-view').style.display='';
+  document.getElementById('wod-ex-view').style.display='none';
+  document.getElementById('wo-detail-modal').style.display='flex';
+}
+
+function openExEdit(ei){
+  if(_editingWoIdx===null)return;
+  _editingExIdx=ei;
+  var w=S.workouts[_editingWoIdx];
+  var sets=_wodEnsureSets(w,ei);
+  document.getElementById('wod-ex-title').textContent=(w.exercises||[])[ei]||'Упражнение';
+  renderWodExSets(sets);
+  document.getElementById('wod-list-view').style.display='none';
+  document.getElementById('wod-ex-view').style.display='';
+}
+
+function renderWodExSets(sets){
+  var el=document.getElementById('wod-ex-sets');
+  el.innerHTML=sets.map(function(s,si){
+    return '<div style="display:flex;align-items:center;gap:8px;margin-bottom:8px">'
+      +'<div style="width:28px;height:28px;border-radius:50%;background:var(--bg4);display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:800;color:var(--text2);flex-shrink:0">'+(si+1)+'</div>'
+      +'<div style="flex:1"><div class="flbl" style="margin-bottom:3px">Вес (кг)</div>'
+      +'<input class="inp" type="number" id="wod-s-w-'+si+'" value="'+(s.weight||'')+'" style="padding:8px 10px;font-size:13px" placeholder="0"></div>'
+      +'<div style="flex:1"><div class="flbl" style="margin-bottom:3px">Повторения</div>'
+      +'<input class="inp" type="text" id="wod-s-r-'+si+'" value="'+(s.reps||'')+'" style="padding:8px 10px;font-size:13px" placeholder="10"></div>'
+      +'<button onclick="wodDelSet('+si+')" style="background:none;border:none;color:var(--text3);font-size:20px;cursor:pointer;padding:4px;flex-shrink:0;margin-top:16px">×</button>'
+      +'</div>';
+  }).join('');
+}
+
+function wodAddSet(){
+  if(_editingWoIdx===null||_editingExIdx===null)return;
+  var sets=_wodEnsureSets(S.workouts[_editingWoIdx],_editingExIdx);
+  var last=sets[sets.length-1]||{weight:0,reps:'10'};
+  sets.push({weight:last.weight,reps:last.reps});
+  renderWodExSets(sets);
+}
+
+function wodDelSet(si){
+  if(_editingWoIdx===null||_editingExIdx===null)return;
+  var sets=_wodEnsureSets(S.workouts[_editingWoIdx],_editingExIdx);
+  if(sets.length<=1)return;
+  sets.splice(si,1);
+  renderWodExSets(sets);
+}
+
+function _recalcWoVolume(w){
+  var vol=0,totalSets=0;
+  (w.exercises||[]).forEach(function(name,i){
+    var sets=w.exerciseSets&&w.exerciseSets[i]?w.exerciseSets[i]:[];
+    totalSets+=sets.length;
+    sets.forEach(function(s){vol+=(parseFloat(s.weight)||0)*(parseInt(s.reps)||0);});
+  });
+  w.volume=vol;
+  w.totalSets=totalSets;
+}
+
+function saveExEdit(){
+  if(_editingWoIdx===null||_editingExIdx===null)return;
+  var w=S.workouts[_editingWoIdx];
+  var sets=_wodEnsureSets(w,_editingExIdx);
+  sets.forEach(function(s,si){
+    var wi2=document.getElementById('wod-s-w-'+si);
+    var ri=document.getElementById('wod-s-r-'+si);
+    if(wi2)s.weight=parseFloat(wi2.value)||0;
+    if(ri)s.reps=ri.value||'10';
+  });
+  var maxW=Math.max.apply(null,sets.map(function(s){return parseFloat(s.weight)||0;}));
+  if(!w.exerciseWeights)w.exerciseWeights=[];
+  w.exerciseWeights[_editingExIdx]=maxW;
+  _recalcWoVolume(w);
+  sv();renderHistory();renderProgress();updateHome();
+  openWorkoutDetail(_editingWoIdx);
+}
+
+function backToWodList(){
+  document.getElementById('wod-list-view').style.display='';
+  document.getElementById('wod-ex-view').style.display='none';
+}
+
+function saveWorkoutDetail(){
+  if(_editingWoIdx===null)return;
+  var w=S.workouts[_editingWoIdx];
+  var n=document.getElementById('wod-name').value.trim();
+  if(n)w.name=n;
+  var di=document.getElementById('wod-date-input');
+  if(di&&di.value){w.date=_inputToDate(di.value);w.rawDate=new Date(di.value).toISOString();}
+  sv();renderHistory();renderProgress();updateHome();
+  document.getElementById('wo-detail-modal').style.display='none';
+}
+
+function repeatWorkout(){
+  if(_editingWoIdx===null)return;
+  var w=S.workouts[_editingWoIdx];
+  var plan={name:w.name,duration:'~60 мин',exercises:(w.exercises||[]).map(function(name,i){
+    var sets=_wodEnsureSets(w,i);
+    var maxW=Math.max.apply(null,sets.map(function(s){return parseFloat(s.weight)||0;}));
+    var ex={name:name,equipment:'—',sets:sets.length,reps:sets[0]?sets[0].reps:'10',weight:String(maxW),rest:90,technique:''};
+    ex.setWeights=sets.map(function(s){return parseFloat(s.weight)||0;});
+    ex.setReps=sets.map(function(s){return s.reps||'10';});
+    return ex;
+  })};
+  document.getElementById('wo-detail-modal').style.display='none';
+  S.currentPlan=plan;renderActivePlan(plan);goPage('workout');
+}
+
 function renderHistory(){
   var el=document.getElementById('history-list');var wo=S.workouts||[];
   if(wo.length===0){el.innerHTML='<div style="color:var(--text2);font-size:13px;font-weight:500;padding:24px 0">Тренировок пока нет</div>';return;}
   el.innerHTML=wo.map(function(w,wi){
     var v=w.volume?(Math.round(w.volume)+' кг'):'—';
     var exs=(w.exercises||[]).map(function(e){return '<span class="hist-ex">'+e+'</span>';}).join(' · ');
-    return '<div class="hist-item"><div class="hist-row"><div><div class="hist-name">'+w.name+'</div><div class="hist-date">'+w.date+'</div></div><div style="display:flex;align-items:center;gap:10px"><div class="hist-vol">'+v+'</div><button onclick="deleteWorkout('+wi+')" style="background:none;border:none;color:var(--text3);font-size:20px;cursor:pointer;padding:0 4px;line-height:1">×</button></div></div><div class="hist-exs" style="margin-top:8px">'+exs+'</div></div>';
+    return '<div class="hist-item" onclick="openWorkoutDetail('+wi+')" style="cursor:pointer"><div class="hist-row"><div><div class="hist-name">'+w.name+'</div><div class="hist-date">'+w.date+'</div></div><div style="display:flex;align-items:center;gap:10px"><div class="hist-vol">'+v+'</div><button onclick="event.stopPropagation();deleteWorkout('+wi+')" style="background:none;border:none;color:var(--text3);font-size:20px;cursor:pointer;padding:0 4px;line-height:1">×</button></div></div><div class="hist-exs" style="margin-top:8px">'+exs+'</div></div>';
   }).join('');
 }
 
@@ -1235,23 +1562,55 @@ function renderProgress(){
   if(wo.length===0){el.innerHTML='<div style="color:var(--text2);font-size:13px;font-weight:500;padding:24px 0">Завершённых тренировок пока нет</div>';return;}
   var exMap={};
   wo.forEach(function(w){
-    (w.exercises||[]).forEach(function(eName){
+    (w.exercises||[]).forEach(function(eName,ei){
       if(!exMap[eName])exMap[eName]=[];
-      exMap[eName].push({date:w.date,vol:w.volume||0});
+      var weight=0;
+      if(w.exerciseWeights&&w.exerciseWeights[ei]!=null)weight=w.exerciseWeights[ei];
+      exMap[eName].push({date:w.date,rawDate:w.rawDate||w.date,weight:weight,vol:w.volume||0});
     });
   });
   var html='';
-  Object.keys(exMap).slice(0,5).forEach(function(name){
-    var entries=exMap[name].slice(0,6).reverse();
-    var maxVol=Math.max.apply(null,entries.map(function(e){return e.vol;}));
-    var bars=entries.map(function(e,i){
-      var h=maxVol>0?Math.round(e.vol/maxVol*100):10;
-      var isCurr=i===entries.length-1;
-      return '<div class="mc-bar'+(isCurr?' current':'')+'" style="height:'+h+'%" title="'+e.date+'"></div>';
-    }).join('');
-    html+='<div class="prog-exercise"><div class="prog-ex-name">'+name+'</div><div class="mini-chart">'+bars+'</div></div>';
+  Object.keys(exMap).forEach(function(name,idx){
+    var entries=exMap[name].slice().reverse().slice(0,10);
+    var weights=entries.map(function(e){return e.weight||0;});
+    var maxW=Math.max.apply(null,weights)||1;
+    var hasWeights=weights.some(function(w){return w>0;});
+    var maxWVal=Math.max.apply(null,weights);
+    var count=exMap[name].length;
+    html+='<div style="margin-bottom:10px;background:var(--bg3);border-radius:16px;border:1px solid var(--border);overflow:hidden">'
+      +'<div onclick="toggleProgEx(\'prex-'+idx+'\')" style="display:flex;align-items:center;justify-content:space-between;padding:14px 16px;cursor:pointer">'
+      +'<div><div style="font-size:15px;font-weight:800;letter-spacing:-.3px">'+name+'</div>'
+      +'<div style="font-size:11px;color:var(--text2);font-weight:600;margin-top:2px">'+count+' '+(count===1?'тренировка':count<5?'тренировки':'тренировок')+(hasWeights?' · макс '+maxWVal+' кг':'')+'</div></div>'
+      +'<div id="prex-arr-'+idx+'" style="color:var(--text2);font-size:18px;transition:transform .2s">›</div>'
+      +'</div>'
+      +'<div id="prex-'+idx+'" style="display:none;padding:0 16px 16px">'
+      +(hasWeights
+        ?'<div style="display:flex;align-items:flex-end;gap:4px;height:80px;margin-bottom:6px">'
+          +entries.map(function(e,i){
+            var h=maxW>0?Math.max(Math.round((e.weight||0)/maxW*100),e.weight>0?8:3):3;
+            var isCurr=i===entries.length-1;
+            return '<div style="flex:1;display:flex;flex-direction:column;align-items:center;gap:3px">'
+              +'<div style="font-size:9px;color:'+(isCurr?'var(--green)':'var(--text2)')+';font-weight:700">'+(e.weight>0?e.weight:'')+'</div>'
+              +'<div style="width:100%;height:'+h+'%;background:'+(isCurr?'var(--green)':'var(--bg4)')+';border-radius:4px;min-height:3px"></div>'
+              +'</div>';
+          }).join('')
+          +'</div>'
+          +'<div style="display:flex;gap:4px">'
+          +entries.map(function(e){return '<div style="flex:1;text-align:center;font-size:9px;color:var(--text3);font-weight:600;overflow:hidden">'+e.date.replace(/\.\d{4}$/,'')+'</div>';}).join('')+'</div>'
+        :'<div style="font-size:12px;color:var(--text2);font-weight:500;padding:8px 0">Данные по весам не записаны</div>'
+      )
+      +'</div></div>';
   });
   el.innerHTML=html||'<div style="color:var(--text2);font-size:13px;">Данные появятся после тренировок</div>';
+}
+
+function toggleProgEx(id){
+  var el=document.getElementById(id);if(!el)return;
+  var open=el.style.display==='none';
+  el.style.display=open?'':'none';
+  var idx=id.replace('prex-','');
+  var arr=document.getElementById('prex-arr-'+idx);
+  if(arr)arr.style.transform=open?'rotate(90deg)':'';
 }
 
 // ── TAB SWITCH ────────────────────────────────────────────────
@@ -1351,25 +1710,24 @@ function onPhoto(input){
   if(!input.files||!input.files[0])return;
   var r=new FileReader();
   r.onload=function(e){
-    var src=e.target.result;
-    document.getElementById('prof-img').src=src;document.getElementById('prof-img').style.display='';document.getElementById('prof-svg').style.display='none';
-    if(!S.profile)S.profile={};S.profile.photo=src;sv();
+    compressImage(e.target.result,300,300,function(src){
+      document.getElementById('prof-img').src=src;document.getElementById('prof-img').style.display='';document.getElementById('prof-svg').style.display='none';
+      if(!S.profile)S.profile={};S.profile.photo=src;sv();
+    });
   };
   r.readAsDataURL(input.files[0]);
 }
-function loadMeasureInputs(){var m=S.measures||{};['chest','waist','hips','arm','thigh','calf','fat'].forEach(function(k){var el=document.getElementById('mi-'+k);if(el)el.value=m[k]||'';});}
+var _measureKeys=['chest','underbust','shoulders','leftarm','rightarm','waist','glutes','hips','leftthigh','rightthigh','leftcalf','rightcalf','fat'];
+function loadMeasureInputs(){var m=S.measures||{};_measureKeys.forEach(function(k){var el=document.getElementById('mi-'+k);if(el)el.value=m[k]||'';});}
 function saveMeasures(){
-  S.measures={chest:document.getElementById('mi-chest').value,waist:document.getElementById('mi-waist').value,hips:document.getElementById('mi-hips').value,arm:document.getElementById('mi-arm').value,thigh:document.getElementById('mi-thigh').value,calf:document.getElementById('mi-calf').value,fat:document.getElementById('mi-fat').value};
-  sv();updateMeasureDisplay();document.getElementById('m-modal').style.display='none';
+  var m={};_measureKeys.forEach(function(k){var el=document.getElementById('mi-'+k);if(el)m[k]=el.value;});
+  S.measures=m;sv();updateMeasureDisplay();document.getElementById('m-modal').style.display='none';
 }
 function updateMeasureDisplay(){
   var m=S.measures||{};
-  document.getElementById('dm-chest').textContent=m.chest?m.chest+'см':'—';
-  document.getElementById('dm-waist').textContent=m.waist?m.waist+'см':'—';
-  document.getElementById('dm-hips').textContent=m.hips?m.hips+'см':'—';
-  document.getElementById('dm-arm').textContent=m.arm?m.arm+'см':'—';
-  document.getElementById('dm-thigh').textContent=m.thigh?m.thigh+'см':'—';
-  document.getElementById('dm-calf').textContent=m.calf?m.calf+'см':'—';
+  ['chest','underbust','shoulders','leftarm','rightarm','waist','glutes','hips','leftthigh','rightthigh','leftcalf','rightcalf'].forEach(function(k){
+    var el=document.getElementById('dm-'+k);if(el)el.textContent=m[k]?m[k]+'см':'—';
+  });
 }
 
 // ── AI CHAT ───────────────────────────────────────────────────
@@ -1586,6 +1944,59 @@ updateEqHint();
     </div>
     <button class="btn btn-p" onclick="applyCalRange()" style="margin-top:16px" id="cal-apply-btn" disabled>Применить</button>
     <button class="btn btn-s" onclick="document.getElementById('cal-modal').style.display='none'">Отмена</button>
+  </div>
+</div>
+
+<!-- MODAL: детали тренировки -->
+<div class="mo" id="wo-detail-modal" style="display:none" onclick="if(event.target===this)document.getElementById('wo-detail-modal').style.display='none'">
+  <div class="md">
+    <div class="md-handle"></div>
+    <!-- LIST VIEW -->
+    <div id="wod-list-view">
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:16px">
+        <div class="md-title" style="margin:0">Тренировка</div>
+        <button onclick="document.getElementById('wo-detail-modal').style.display='none'" style="background:none;border:none;color:var(--text3);font-size:22px;cursor:pointer;padding:0">×</button>
+      </div>
+      <div class="field">
+        <label class="flbl">Название</label>
+        <input class="inp" id="wod-name">
+      </div>
+      <div style="margin-bottom:16px">
+        <label class="flbl">Дата</label>
+        <input class="inp" type="date" id="wod-date-input" style="padding:8px 10px;font-size:13px;color-scheme:dark">
+        <div id="wod-stats" style="font-size:11px;color:var(--text2);font-weight:600;margin-top:6px"></div>
+      </div>
+      <div class="sec-lbl" style="margin-top:0">Упражнения</div>
+      <div id="wod-exercises"></div>
+      <button onclick="wodShowAddEx()" style="width:100%;margin-top:8px;background:var(--bg3);border:1.5px dashed var(--border2);color:var(--text2);font-family:Manrope,sans-serif;font-size:13px;font-weight:700;padding:10px;border-radius:12px;cursor:pointer">+ Добавить упражнение</button>
+      <div id="wod-add-ex-row" style="display:none;margin-top:8px;gap:8px;align-items:center">
+        <input class="inp" id="wod-add-ex-input" placeholder="Название упражнения" style="flex:1;padding:8px 10px;font-size:13px">
+        <button onclick="wodConfirmAddEx()" style="background:var(--green);border:none;color:#000;font-family:Manrope,sans-serif;font-size:14px;font-weight:800;padding:8px 16px;border-radius:10px;cursor:pointer">OK</button>
+      </div>
+      <button class="btn btn-p" onclick="saveWorkoutDetail()" style="margin-top:16px">Сохранить</button>
+      <button class="btn btn-s" onclick="repeatWorkout()" style="margin-top:8px">Повторить тренировку →</button>
+    </div>
+    <!-- EX EDIT VIEW -->
+    <div id="wod-ex-view" style="display:none">
+      <div style="display:flex;align-items:center;gap:10px;margin-bottom:16px">
+        <button onclick="backToWodList()" style="background:none;border:none;color:var(--text2);font-size:22px;cursor:pointer;padding:0;line-height:1">‹</button>
+        <div class="md-title" id="wod-ex-title" style="margin:0;flex:1"></div>
+      </div>
+      <div id="wod-ex-sets"></div>
+      <button onclick="wodAddSet()" style="width:100%;margin-top:10px;background:var(--bg3);border:1.5px dashed var(--border2);color:var(--text2);font-family:Manrope,sans-serif;font-size:13px;font-weight:700;padding:10px;border-radius:12px;cursor:pointer">+ Добавить подход</button>
+      <button class="btn btn-p" onclick="saveExEdit()" style="margin-top:12px">Готово</button>
+    </div>
+  </div>
+</div>
+
+<!-- MODAL: гид по замерам -->
+<div class="mo" id="measure-guide-modal" style="display:none" onclick="if(event.target===this)document.getElementById('measure-guide-modal').style.display='none'">
+  <div class="md" style="padding:0;overflow:hidden;border-radius:20px">
+    <div style="display:flex;align-items:center;justify-content:space-between;padding:16px 18px 12px">
+      <div class="md-title" style="margin:0">Как измерять</div>
+      <button onclick="document.getElementById('measure-guide-modal').style.display='none'" style="background:none;border:none;color:var(--text3);font-size:22px;cursor:pointer;padding:0">×</button>
+    </div>
+    <img id="measure-guide-img" src="measure-guide.png" alt="Схема замеров" style="width:100%;display:block;max-height:70vh;object-fit:contain;background:var(--bg3)">
   </div>
 </div>
 
