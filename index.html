@@ -1680,7 +1680,7 @@ function renderHistory(){
     return '<div class="hist-item">'
       +'<div class="hist-row" onclick="openWorkoutDetail('+wi+')" style="cursor:pointer"><div><div class="hist-name">'+w.name+'</div><div class="hist-date">'+w.date+'</div></div><div style="display:flex;align-items:center;gap:10px"><div class="hist-vol">'+v+'</div><button onclick="event.stopPropagation();deleteWorkout('+wi+')" style="background:none;border:none;color:var(--text3);font-size:20px;cursor:pointer;padding:0 4px;line-height:1">×</button></div></div>'
       +(cnt>0?'<button onclick="toggleHistExs('+wi+')" style="background:none;border:none;color:var(--text2);font-size:11px;font-weight:700;padding:6px 0 2px;cursor:pointer;font-family:Manrope,sans-serif;display:flex;align-items:center;gap:4px;-webkit-tap-highlight-color:transparent">'
-        +'<span id="hexs-arr-'+wi+'" style="display:inline-block;font-size:9px;transition:transform .18s;line-height:1">▶</span>'
+        +'<svg id="hexs-arr-'+wi+'" width="6" height="9" viewBox="0 0 6 9" style="transition:transform .18s;flex-shrink:0;transform-origin:center"><polygon points="0,0 6,4.5 0,9" fill="#6b6b6b"/></svg>'
         +'<span id="hexs-lbl-'+wi+'">'+cntLabel+'</span>'
         +'</button>'
         +'<div class="hist-exs" id="hexs-'+wi+'" style="display:none;margin-top:4px">'+exs+'</div>':'')
