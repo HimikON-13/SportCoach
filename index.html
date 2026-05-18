@@ -1675,8 +1675,25 @@ function renderHistory(){
   el.innerHTML=wo.map(function(w,wi){
     var v=w.volume?(Math.round(w.volume)+' кг'):'—';
     var exs=(w.exercises||[]).map(function(e){return '<span class="hist-ex">'+e+'</span>';}).join(' · ');
-    return '<div class="hist-item" onclick="openWorkoutDetail('+wi+')" style="cursor:pointer"><div class="hist-row"><div><div class="hist-name">'+w.name+'</div><div class="hist-date">'+w.date+'</div></div><div style="display:flex;align-items:center;gap:10px"><div class="hist-vol">'+v+'</div><button onclick="event.stopPropagation();deleteWorkout('+wi+')" style="background:none;border:none;color:var(--text3);font-size:20px;cursor:pointer;padding:0 4px;line-height:1">×</button></div></div><div class="hist-exs" style="margin-top:8px">'+exs+'</div></div>';
+    var cnt=(w.exercises||[]).length;
+    var cntLabel=cnt+' '+(cnt===1?'упражнение':cnt>1&&cnt<5?'упражнения':'упражнений');
+    return '<div class="hist-item">'
+      +'<div class="hist-row" onclick="openWorkoutDetail('+wi+')" style="cursor:pointer"><div><div class="hist-name">'+w.name+'</div><div class="hist-date">'+w.date+'</div></div><div style="display:flex;align-items:center;gap:10px"><div class="hist-vol">'+v+'</div><button onclick="event.stopPropagation();deleteWorkout('+wi+')" style="background:none;border:none;color:var(--text3);font-size:20px;cursor:pointer;padding:0 4px;line-height:1">×</button></div></div>'
+      +(cnt>0?'<button onclick="toggleHistExs('+wi+')" style="background:none;border:none;color:var(--text2);font-size:11px;font-weight:700;padding:6px 0 2px;cursor:pointer;font-family:Manrope,sans-serif;display:flex;align-items:center;gap:4px;-webkit-tap-highlight-color:transparent">'
+        +'<span id="hexs-arr-'+wi+'" style="display:inline-block;font-size:9px;transition:transform .18s;line-height:1">▶</span>'
+        +'<span id="hexs-lbl-'+wi+'">'+cntLabel+'</span>'
+        +'</button>'
+        +'<div class="hist-exs" id="hexs-'+wi+'" style="display:none;margin-top:4px">'+exs+'</div>':'')
+      +'</div>';
   }).join('');
+}
+function toggleHistExs(wi){
+  var el=document.getElementById('hexs-'+wi);
+  var arr=document.getElementById('hexs-arr-'+wi);
+  if(!el)return;
+  var open=el.style.display==='none';
+  el.style.display=open?'flex':'none';
+  if(arr)arr.style.transform=open?'rotate(90deg)':'';
 }
 
 // ── PROGRESS ──────────────────────────────────────────────────
