@@ -42,6 +42,14 @@ class Handler(BaseHTTPRequestHandler):
         path = urlparse(self.path).path
         if path == "/" or path == "/index.html":
             self._serve_file("index.html", "text/html")
+        elif path.endswith(".png"):
+            self._serve_file(path.lstrip("/"), "image/png")
+        elif path.endswith(".jpg") or path.endswith(".jpeg"):
+            self._serve_file(path.lstrip("/"), "image/jpeg")
+        elif path.endswith(".js"):
+            self._serve_file(path.lstrip("/"), "application/javascript")
+        elif path.endswith(".css"):
+            self._serve_file(path.lstrip("/"), "text/css")
         else:
             self.send_response(404)
             self.end_headers()
